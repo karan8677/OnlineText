@@ -1,0 +1,106 @@
+//- include Login.html
+
+//- extends layout
+
+//- block content
+//-   h1= title
+//-   p Welcome to #{title}
+
+
+//- doctype html
+//- html(lang='en')
+//-   head
+//-     title Bootstrap Example
+//-     meta(charset='utf-8')
+//-     meta(name='viewport', content='width=device-width, initial-scale=1')
+//-     link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css')
+//-     script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js')
+//-     script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js')
+//-     script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js')
+//-   body
+//-     .container
+//-       h2 Welcome OnlineText
+//-       form(action='/OnlineText/login', method='POST')
+//-         .form-group
+//-           label(for='usr') 帳號:
+//-           input#usr.form-control(type='text', name='user_account')
+//-         .form-group
+//-           label(for='pwd') 密碼:
+//-           input#pwd.form-control(type='password', name='user_password')
+//-         button.btn.btn-primary(type='submit') Submit
+//-       // <label for="result_text">{succeawsdss}</label>
+//-       label#result_text
+//-       script.
+//-         if (#{ success } === true) {
+//-         document.getElementById("result_text").innerHTML = "重複帳號";
+//-         }
+
+
+doctype html
+html(lang='zh-Hant-TW')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0, shrink-to-fit=no')
+    meta(http-equiv='X-UA-Compatible', content='ie=edge')
+    title 登入
+    // Bootstrap CSS
+    link(rel='stylesheet', href='bootstrap-4.0.0-dist/css/bootstrap.min.css')
+    script(src='https://kit.fontawesome.com/f46675eb01.js', crossorigin='anonymous')
+    // whole background
+    style(type='text/css').
+      html{
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      }
+      body{
+      background-image: url("login_background.png");
+      background-repeat: no-repeat;
+      background-size: 1920px 1080px;
+      height: 100%;
+      }
+      .col-center-block{
+      float: none;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 30%;
+      text-align: center;
+      max-width: 500px;
+      background-color: rgb(58, 58, 58);
+      }
+      .edit{
+      margin-top: 5px;
+      }
+      .textcolor{
+      color: white;
+      }
+  body
+    .container
+      .row.row-centerd
+        .col-xs-6.col-md-4.col-center-block
+          h1.textcolor 歡迎登入
+          form(role='form', action='login', method='POST')
+            .form-group
+              label.textcolor(for='InputEmail') 電子郵件
+              input#InputEmail_login.form-control(type='email', name='user_account', placeholder='請輸入信箱')
+            .form-group
+              label.textcolor(for='InputPassword') 密碼
+              input#InputPassword_login.form-control(type='password', name='user_password', placeholder='請輸入密碼')
+            div
+              button#login_check.btn.btn-default(type='submit', name='login_check') 登入
+          form(role='form', action='../OnlineText/register', method='GET')
+            div
+              button#register.btn.btn-default(type='submit', name='register') 註冊
+    script(src='bootstrap-4.0.0-dist/js/jquery/dist/jquery.min.js')
+    script(src='bootstrap-4.0.0-dist/js/popper.js/dist/popper.min.js')
+    script(src='bootstrap-4.0.0-dist/js/bootstrap.min.js')
+    script.
+      $(function(){
+      $("#login_check").click(function(){
+      if($("#InputPassword_login").val()==''){
+      window.alert('帳號密碼不可以為空!')
+      }
+      })
+      })
+
