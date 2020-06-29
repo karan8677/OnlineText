@@ -21,5 +21,6 @@ app.get('/', (req, res) => {
 
 app.use('/OnlineText', index)
 
-
+const path = require('path');
+app.use(express.static(path.join(path.join(__dirname, 'OnlineText'), 'public')));
 export default app

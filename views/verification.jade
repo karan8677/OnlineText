@@ -6,7 +6,7 @@ html(lang='zh-Hant-TW')
     meta(http-equiv='X-UA-Compatible', content='ie=edge')
     title 驗證頁面
     // Bootstrap CSS
-    link(rel='stylesheet', href='bootstrap-4.0.0-dist/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/bootstrap-4.0.0-dist/css/bootstrap.min.css')
     script(src='https://kit.fontawesome.com/f46675eb01.js', crossorigin='anonymous')
     // whole background
     style(type='text/css').
@@ -16,7 +16,7 @@ html(lang='zh-Hant-TW')
       height: 100%;
       }
       body{
-      background-image: url("login_background.png");
+      background-image: url("/images/login_background.png");
       background-repeat: no-repeat;
       background-size: 1920px 1080px;
       height: 100%;
@@ -53,9 +53,9 @@ html(lang='zh-Hant-TW')
           form
             div
               button#verification.btn.btn-default(type='submit', name='verification') 送出
-    script(src='bootstrap-4.0.0-dist/js/jquery/dist/jquery.min.js')
-    script(src='bootstrap-4.0.0-dist/js/popper.js/dist/popper.min.js')
-    script(src='bootstrap-4.0.0-dist/js/bootstrap.min.js')
+    script(src='/bootstrap-4.0.0-dist/js/jquery/dist/jquery.min.js')
+    script(src='/bootstrap-4.0.0-dist/js/popper.js/dist/popper.min.js')
+    script(src='/bootstrap-4.0.0-dist/js/bootstrap.min.js')
     script.
       $(function(){
       $("#verification").click(function(){
