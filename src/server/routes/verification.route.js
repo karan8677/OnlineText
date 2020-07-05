@@ -3,6 +3,6 @@ import express from 'express'
 const router = express.Router()
 
 router.get('/', (req, res) => {
-    res.render('verification')
+    res.render('Verification')
 })
 export default router

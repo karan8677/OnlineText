@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>聊天頁面</title>
+    <style type="text/css">
+        body {
+            background-color: rgb(30, 1, 99);
+        }
+
+        .talk_con {
+            width: 600px;
+            height: 500px;
+            border: 1px solid #666;
+            margin: 50px auto 0;
+            background: #f9f9f9;
+        }
+
+        .talk_show {
+            width: 580px;
+            height: 420px;
+            border: 1px solid #666;
+            background: #fff;
+            margin: 10px auto 0;
+            overflow: auto;
+        }
+
+        .talk_input {
+            width: 580px;
+            margin: 10px auto 0;
+        }
+
+        .talk_word {
+            width: 420px;
+            height: 26px;
+            padding: 0px;
+            float: left;
+            margin-left: 10px;
+            outline: none;
+            text-indent: 10px;
+        }
+
+        .talk_sub {
+            width: 56px;
+            height: 30px;
+            float: left;
+            margin-left: 10px;
+        }
+
+        .talk {
+            margin: 5px
+        }
+
+        .talk span {
+            display: inline-block;
+            background: #4a3a92;
+            border-radius: 0px;
+            color: rgb(255, 255, 255);
+            padding: 1px;
+        }
+    </style>
+    <script>
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "file/chatMessage/" + #{ RoomID });
+
+        xhr.onload = function () {
+            var onLoadMessage = JSON.parse(xhr.responseText)
+            var Words = document.getElementById("words");
+            for(var i = 0, len = onLoadMessage.messageLength ; i< len ; i++){
+
+                if(onLoadMessage.data.message[i].RoomID ===  #{ RoomID }){
+                    Words.innerHTML = Words.innerHTML 
+                                    + '<div class="talk"><span>您說: ' 
+                                    + onLoadMessage.data.message[i].data 
+                                    + '</span></div>'
+                }
+
+            }
+
+        };
+        xhr.send();
+        
+
+        let ws = new WebSocket('ws://localhost:3000')
+
+        ws.onopen = () => {
+            console.log('open connection')
+        }
+
+        ws.onclose = () => {
+            console.log('close connection')
+        }
+
+        ws.onmessage = (data) => {
+            var Words = document.getElementById("words");
+            Words.innerHTML = Words.innerHTML + data.data;
+        }
+
+        window.onload = function () {
+            var Words = document.getElementById("words");
+            var Who = document.getElementById("who");
+            var TalkWords = document.getElementById("talkwords");
+            var TalkSub = document.getElementById("talksub");
+            var LogSub = document.getElementById("logout");
+
+            TalkSub.onclick = function () {
+                var str = "";
+                if (TalkWords.value == "") {
+                    alert("訊息不能為空");
+                    return;
+                }
+
+                str = '<div class="talk"><span>您說: ' + TalkWords.value + '</span></div>';
+                ws.send(str)
+            }
+
+            LogSub.onclick = function () {
+
+            }
+
+        }
+    </script>
+</head>
+
+<body>
+    <div class="talk_con">
+        <div class="talk_show" id="words">
+            <div class="talk"><span id="say"></span></div>
+        </div>
+        <form>
+            <div class="talk_input">
+                <input type="text" class="talk_word" id="talkwords">
+                <input type="reset" value="傳送" class="talk_sub" id="talksub">
+                <input type="reset" value="登出" class="talk_sub" id="logout">
+            </div>
+        </form>
+        <label id="RoomID">Room id:#{RoomID}</label>
+    </div>
+</body>
+
+</html>

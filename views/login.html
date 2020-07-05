@@ -1,28 +1,31 @@
 <!DOCTYPE html>
 <html lang="zh-Hant-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>登入</title>
     <!--Bootstrap CSS-->
-    <link rel="stylesheet" href="bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bootstrap-4.0.0-dist/css/bootstrap.min.css">
     <script src="https://kit.fontawesome.com/f46675eb01.js" crossorigin="anonymous"></script>
 
     <!--whole background-->
     <style type="text/css">
-        html{
+        html {
             margin: 0;
             padding: 0;
             height: 100%;
         }
-        body{
-            background-image: url("./../login_background.png");
+
+        body {
+            background-image: url("/images/login_background.png");
             background-repeat: no-repeat;
             background-size: 1920px 1080px;
-            height: 100%;    
+            height: 100%;
         }
-        .col-center-block{
+
+        .col-center-block {
             float: none;
             display: block;
             margin-left: auto;
@@ -32,10 +35,12 @@
             max-width: 500px;
             background-color: rgb(58, 58, 58);
         }
-        .edit{
+
+        .edit {
             margin-top: 5px;
         }
-        .textcolor{
+
+        .textcolor {
             color: white;
         }
     </style>
@@ -43,24 +48,39 @@
 </head>
 
 <body>
+    <script type="text/javascript">
+        let ws = new WebSocket('ws://localhost:3000')
+
+        //開啟後執行的動作，指定一個 function 會在連結 WebSocket 後執行
+        ws.onopen = () => {
+            console.log('open connection')
+        }
+
+        //關閉後執行的動作，指定一個 function 會在連結中斷後執行
+        ws.onclose = () => {
+            console.log('close connection')
+        }
+    </script>
     <div class="container">
         <div class="row row-centerd">
             <div class="col-xs-6 col-md-4 col-center-block">
                 <h1 class="textcolor">歡迎登入</h1>
-                <form role="form" action="/login" method="POST">
+                <form role="form" action="login" method="POST">
                     <div class="form-group">
                         <label for="InputEmail" class="textcolor">電子郵件</label>
-                        <input type="email" class="form-control" id="InputEmail_login" name="user_account" placeholder="請輸入信箱">    
+                        <input type="email" class="form-control" id="InputEmail_login" name="user_account"
+                            placeholder="請輸入信箱">
                     </div>
                     <div class="form-group">
                         <label for="InputPassword" class="textcolor">密碼</label>
-                        <input type="password" class="form-control" id="InputPassword_login" name="user_password" placeholder="請輸入密碼">
+                        <input type="password" class="form-control" id="InputPassword_login" name="user_password"
+                            placeholder="請輸入密碼">
                     </div>
                     <div>
                         <button type="submit" class="btn btn-default" id="login_check" name="login_check">登入</button>
-                    </div>       
+                    </div>
                 </form>
-                <form role="form" action="OnlineText/register" method="GET">
+                <form role="form" action="register" method="GET">
                     <div>
                         <button type="submit" class="btn btn-default" id="register" name="register">註冊</button>
                     </div>
@@ -68,19 +88,20 @@
             </div>
         </div>
     </div>
-    <script src="bootstrap-4.0.0-dist/js/jquery/dist/jquery.min.js"></script>
-    <script src="bootstrap-4.0.0-dist/js/popper.js/dist/popper.min.js"></script>
-    <script src="bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    <script src="/bootstrap-4.0.0-dist/js/jquery/dist/jquery.min.js"></script>
+    <script src="/bootstrap-4.0.0-dist/js/popper.js/dist/popper.min.js"></script>
+    <script src="/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
 
     <script>
-        $(function(){
-            $("#login_check").click(function(){
-                if($("#InputPassword_login").val()==''){
+        $(function () {
+            $("#login_check").click(function () {
+                if ($("#InputPassword_login").val() == '') {
                     window.alert('帳號密碼不可以為空!')
                 }
             })
         })
     </script>
-    
+
 </body>
+
 </html>

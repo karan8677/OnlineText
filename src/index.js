@@ -1,30 +1,32 @@
-// //透過http模組啟動web server服務
-// const http = require('http')
-
-// const server = http.createServer(function (req, res) {
-//     //設定回應為text文件，並回應 Hello World!
-//     res.writeHead(200, { 'Content-Type': 'text/plain' })
-//     res.end('Hello World!')
-// })
-
-// //設定服務監聽localhost:3000(127.0.0.1/:3000)
-// server.listen('3000', function () {
-//     console.log('server start on 3000 port')
-// })
-
-
 import config from './config/config'
 import app from './config/express'
+import SocketServer from 'ws'
 
-if (!module.parent) {
-    // listen on port config.port
-    app.set('views', './views')
-    app.set("view engine", "jade")
-    app.listen(config.port, () => {
-        console.log(`server started on port http://127.0.
-        0.1:${config.port} (${config.env})`)
+const server = require('http').createServer(app);
+const wss = new SocketServer.Server({ server: server })
+
+wss.on('connection', ws => {
+
+    console.log('Client connected')
+    
+    ws.on('message', data => {
+        ws.send(data)
     })
 
-}
+    ws.on('close', () => {
 
-export default app;
+        console.log('Close connected')
+
+    })
+})
+
+server.listen(config.port, () => {
+    console.log(`server started on port http://127.0.
+    0.1:${config.port} (${config.env})`)
+})
+// if (!module.parent) {
+
+// }
+
+export default
+    { app, wss };
