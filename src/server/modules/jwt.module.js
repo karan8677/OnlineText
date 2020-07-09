@@ -4,14 +4,23 @@ const SECRET = 'thisismynewproject'
 const expires = 1000 * 1000
 
 const jwtVerify = (token)=>{
-
+    
     return new Promise((resolve, reject)=>{
 
         jwt.verify(token, SECRET, (err, payload) =>{
+            
+            var resultPackage = {}
+
             if(err){
-                resolve("Unverify");
+                console.error('verify error:', err)
+                resultPackage["verify"] = "unverify"
+                resolve(resultPackage);
+                // reject(err)
+
             }else{
-                resolve("Verify");
+                resultPackage["verify"] = "verify"
+                resultPackage["payload"] = payload
+                resolve(resultPackage);
             }
         })
     })

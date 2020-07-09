@@ -2,14 +2,26 @@ import accountModule from '../modules/login.module'
 import jwtModule from '../modules/jwt.module'
 
 const loginPost = (req, res) => {
-
     const insertValues = req.body
 
-    accountModule.checkAccount(insertValues).then((result) => {
+    jwtModule.jwtSetCookie(insertValues.user_account, res).then((result) => {
 
-        if (result === "success login") {
+        if (result === "CookieSet") {
 
-            jwtModule.jwtSetCookie(insertValues.user_account, res).then((result) => {
+            accountModule.checkAccount(insertValues).then((result) => {
+
+                if (result.success === "success") {
+
+
+                    res.redirect('mainPage');
+
+                } else if (result.success === "fail") {
+
+                    res.render("Login", {
+                        success: false
+                    })
+
+                }
 
             }).catch((err) => {
 
@@ -17,9 +29,7 @@ const loginPost = (req, res) => {
 
             })
 
-            res.redirect('mainPage');
-
-        } else if (result === "fail login") {
+        } else {
 
             res.render("Login", {
                 success: false
@@ -27,6 +37,8 @@ const loginPost = (req, res) => {
 
         }
 
+
+
     }).catch((err) => {
 
         res.send(err)
@@ -34,36 +46,10 @@ const loginPost = (req, res) => {
     })
 
 
-}
 
-const loginGet = (req, res) => {
 
-    const token = req.cookies;
-    jwtModule.jwtVerify(token).then((result) => {
-
-        if (result === "Verify") {
-
-            res.redirect('mainPage')
-
-        } else if (result === "Unverify") {
-
-            res.redirect('Login')
-
-        } else {
-
-            res.redirect('Login')
-
-        }
-
-    }).catch((err) => {
-
-        res.send(err)
-
-    })
 
 }
-
 export default {
-    loginPost,
-    loginGet
+    loginPost
 }

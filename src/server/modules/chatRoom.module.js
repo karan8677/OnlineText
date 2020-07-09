@@ -9,32 +9,34 @@ const connectionPool = mysql.createPool({
     database: config.mysqlDatabase
 })
 
-const saveMessage = (insertValues) => {
+const creatChatRoom = (insertValues) => {
 
     return new Promise((resolve, reject) => {
 
-        connectionPool.getConnection((connectionError, connection) => {
+    	connectionPool.getConnection((connectionError, connection) => {
 
             if (connectionError) {
 
                 reject(connectionError)
 
             } else {
-                var sqlCommand = "INSERT INTO Message(RoomID, FromUserID, Time, Message) VALUES('" +
-                    insertValues.roomName + "','" +
-                    insertValues.fromUserID + "','"+
-                    "98-09-04" + "','"+
-                    insertValues.message + "')"
-                    connection.query(sqlCommand, function (err, result){
 
+                connection.query('insert INTO ChatRoom SET ?', {
+
+                    RoomName: insertValues.roomName,
+                    Time: CurrentTime,
+                    MemberNum: insertValues.memberNum,
+                    OwnID: insertValues.ownID,
+
+                }, (error, result) => {
                     var resultPackage = {}
 
-                    if (err) {
-                        console.error('SQL error:', err)
+                    if (error){
+                        console.error('SQL error:', error)
                         resultPackage["success"] = "fail"
-                        resolve(resultPackage);
-                        // reject(error)
-                    } else {
+                        // resolve(resultPackage);
+                        reject(error)
+                    }else{
                         resultPackage["success"] = "success"
                         resultPackage["result"] = result
                         resolve(resultPackage);
@@ -42,48 +44,49 @@ const saveMessage = (insertValues) => {
                 })
 
                 connection.release()
-
+                
             }
         })
 
     })
 }
 
-const getChatPreloadMessage = (insertValues) => {
+const getRoomID = (insertValues) => {
 
     return new Promise((resolve, reject) => {
 
         connectionPool.getConnection((connectionError, connection) => {
+
             if (connectionError) {
+
                 reject(connectionError)
+
             } else {
-                var sqlCommand = "SELECT TOP" +
-                    insertValues.limit +
-                    " * From Message Where RoomID = " +
-                    insertValues.roomID +
-                    "DESC"
+                var sqlCommand = "SELECT RoomID FROM ChatRoom WHERE RoomName =" + 
+                                 insertValues.roomName
 
-                connection.query(sqlCommand, function (err, result){
+                connection.query(sqlCommand,function (error, result){
 
-                    if (err) {
-                        console.error('SQL error:', err)
+                    if (error){
+                        console.error('SQL error:', error)
                         resultPackage["success"] = "fail"
                         resolve(resultPackage);
                         // reject(error)
-                    } else {
+                    }else{
                         resultPackage["success"] = "success"
                         resultPackage["result"] = result
                         resolve(resultPackage);
                     }
                 })
+
                 connection.release()
+                
             }
         })
 
     })
 }
-
 export default {
-    saveMessage,
-    getChatPreloadMessage
+    creatChatRoom,
+    getRoomID
 }

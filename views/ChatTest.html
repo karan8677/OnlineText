@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -63,30 +64,52 @@
         }
     </style>
     <script>
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", "file/chatMessage/" + #{ RoomID });
-
-        xhr.onload = function () {
-            var onLoadMessage = JSON.parse(xhr.responseText)
-            var Words = document.getElementById("words");
-            for(var i = 0, len = onLoadMessage.messageLength ; i< len ; i++){
-
-                if(onLoadMessage.data.message[i].RoomID ===  #{ RoomID }){
-                    Words.innerHTML = Words.innerHTML 
-                                    + '<div class="talk"><span>您說: ' 
-                                    + onLoadMessage.data.message[i].data 
-                                    + '</span></div>'
-                }
-
-            }
-
-        };
-        xhr.send();
-        
+        var userAccount
+        var webSocketList = {}
+        var xhr = new XMLHttpRequest()
+        var xhr2 = new XMLHttpRequest()
 
         let ws = new WebSocket('ws://localhost:3000')
 
+
+        xhr.open("GET", "file/room");
+
+        xhr.onload = function () {
+
+            var onLoadMessage = JSON.parse(xhr.responseText)
+            console.log(onLoadMessage)
+
+            // room.forEach(function(room) {
+            //   console.log(room);
+            // });
+
+        };
+        xhr.send();
+
+        xhr2.open("GET", "file/userName");
+
+        xhr2.onload = function () {
+
+            var onLoadMessage = JSON.parse(xhr2.responseText)
+            console.log(onLoadMessage)
+
+            // userName.forEach(function(userName) {
+            //   userAccount = userName
+            //   console.log(userName);
+            // });
+            webSocketList = {}
+            webSocketList["messageName"] = "userAccount"
+            webSocketList["data"] = onLoadMessage.data
+            sendWebSocket(webSocketList)
+
+        };
+        xhr2.send();
+
+
+
+
         ws.onopen = () => {
+
             console.log('open connection')
         }
 
@@ -95,32 +118,92 @@
         }
 
         ws.onmessage = (data) => {
-            var Words = document.getElementById("words");
-            Words.innerHTML = Words.innerHTML + data.data;
+            var parseData = JSON.parse(data.data)
+            switch (parseData.messageName) {
+                case "message":
+                    newMessage(parseData.data)
+                    break;
+                case "preMessage":
+                    preMessage(parseData.data)
+                    break;
+                default:
+                    break;
+            }
         }
 
         window.onload = function () {
-            var Words = document.getElementById("words");
-            var Who = document.getElementById("who");
+
             var TalkWords = document.getElementById("talkwords");
             var TalkSub = document.getElementById("talksub");
             var LogSub = document.getElementById("logout");
 
             TalkSub.onclick = function () {
-                var str = "";
+                webSocketList = {}
                 if (TalkWords.value == "") {
-                    alert("訊息不能為空");
                     return;
                 }
+                webSocketList["messageName"] = "message"
 
-                str = '<div class="talk"><span>您說: ' + TalkWords.value + '</span></div>';
-                ws.send(str)
+                var messagePackage = {}
+                messagePackage["fromUserID"] = userAccount
+                messagePackage["message"] = TalkWords.value
+                messagePackage["roomName"] = #{ RoomID }
+
+                webSocketList["data"] = messagePackage
+                // str = '<div class="talk"><span>您說: ' + TalkWords.value + '</span></div>';
+                ws.send(JSON.stringify(webSocketList))
             }
 
             LogSub.onclick = function () {
 
             }
 
+        }
+
+        function sendWebSocket(list) {
+            var data = JSON.stringify(list)
+            ws.send(data)
+        }
+
+        function newMessage(message) {
+            var Words = document.getElementById("words");
+            // var Words = document.getElementById(message.roomName);
+            Words.innerHTML = Words.innerHTML +
+                '<div class="talk"><span>' +
+                message.fromUserID +
+                ': ' +
+                message.message +
+                '</span></div>';
+        }
+
+        function preMessage(preMessage) {
+
+            for (var i = 0, len = preMessage.messageLength; i < len; i++) {
+                var Words = document.getElementById(preMessage.message[i].roomName);
+                Words.innerHTML = Words.innerHTML +
+                    '<div class="talk"><span>' +
+                    preMessage.message[i].fromUserID +
+                    ': ' +
+                    preMessage.message[i].message +
+                    '</span></div>';
+            }
+
+        }
+
+        function sendMessage(button) {
+            webSocketList = {}
+            if (TalkWords.value == "") {
+                return;
+            }
+            webSocketList["messageName"] = "message"
+
+            var messagePackage = {}
+            messagePackage["fromUserID"] = userAccount
+            messagePackage["message"] = TalkWords.value
+            messagePackage["roomName"] = button.name
+
+            webSocketList["data"] = messagePackage
+            ws.send(webSocketList)
         }
     </script>
 </head>

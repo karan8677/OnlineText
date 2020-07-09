@@ -19,5 +19,4 @@ router.use('/mainPage', mainPage)
 router.use('/verification', verification)
 router.use('/file', file)
 
-
-export default router
+export default router 

@@ -5,11 +5,11 @@ const mainPageGet = (req, res) => {
     const token = req.cookies.token;
     jwtModule.jwtVerify(token).then((result) => {
 
-        if (result === "Verify") {
+        if (result.verify === "verify") {
 
             res.render('RoomInput')
 
-        } else if (result === "Unverify") {
+        } else if (result.verify === "unverify") {
 
             res.redirect('login')
 
@@ -24,21 +24,22 @@ const mainPageGet = (req, res) => {
         res.send(err)
 
     })
-
 }
 
 const mainPagePost = (req, res) => {
+
     const token = req.cookies.token;
+
     jwtModule.jwtVerify(token).then((result) => {
 
-        if (result === "Verify") {
+        if (result.verify === "verify") {
 
             const RoomID = req.body.RoomID
             res.render('ChatTest', {
                 RoomID: RoomID
             })
 
-        } else if (result === "Unverify") {
+        } else if (result.verify === "unverify") {
 
             res.redirect('login')
 
@@ -48,12 +49,11 @@ const mainPagePost = (req, res) => {
 
         }
 
-    }).catch((err) => {
+    }).catch((error) => {
 
-        res.send(err)
+        res.send(error)
 
     })
-
 }
 
 export default {

@@ -16,23 +16,28 @@ const checkAccount = (insertValues) => {
             if (connectionError) {
                 reject(connectionError)
             } else {
-                // connection.query('insert INTO Account SET ?', insertValues, (error, result) => {
-                connection.query('Select user_password From account Where user_account = ?', insertValues.user_account, (error, result) => {
+                connection.query('Select UserPassword From account Where UserAccount = ?', insertValues.user_account, (error, result) => {
+                    var resultPackage = {}
                     if (error) {
 
                         console.error('SQL error:', error)
+                        resultPackage["success"] = "fail"
+                        // resolve(resultPackage);
                         reject(error)
+                        
+                    } else if (result[0].UserPassword === insertValues.user_password) {
 
-                    } else if (result[0].user_password === insertValues.user_password) {
-
-                        // console.log(insertValues)
-                        resolve("success login");
+                        resultPackage["success"] = "success"
+                        resultPackage["result"] = result
+                        resolve(resultPackage);
 
                     } else {
-
-                        resolve("fail login");
-
+                        console.error('SQL error:', error)
+                        resultPackage["success"] = "fail"
+                        // resolve(resultPackage);
+                        reject(error)
                     }
+
                 })
                 connection.release()
             }

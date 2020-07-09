@@ -9,33 +9,42 @@ const connectionPool = mysql.createPool({
     database: config.mysqlDatabase
 })
 
-const createAccount = (insertValues) => {
+const checkAccount = (insertValues) => {
     return new Promise((resolve, reject) => {
+
         connectionPool.getConnection((connectionError, connection) => {
             if (connectionError) {
                 reject(connectionError)
             } else {
-                connection.query('insert INTO Account SET ?', {
-                    user_account: insertValues.user_account,
-                    user_password: insertValues.user_password,
-                }, (error, result) => {
-                    if (error) {
+                connection.query('Select UserPassword From account Where UserAccount = ?', insertValues.user_account, (error, result) => {
+                    var resultPackage = {}
 
+                    if (error) {
                         console.error('SQL error:', error)
+                        resultPackage["success"] = "fail"
+                        // resolve(resultPackage);
                         reject(error)
+                    } else if (result[0].UserPassword === insertValues.user_password) {
+
+                        resultPackage["success"] = "success"
+                        resultPackage["result"] = result
+                        resolve(resultPackage);
 
                     } else {
-
-                        resolve(`success register`)
-
+                        console.error('SQL error:', error)
+                        resultPackage["success"] = "fail"
+                        // resolve(resultPackage);
+                        reject(error)
                     }
+
                 })
                 connection.release()
             }
         })
+
     })
 }
 
 export default {
-    createAccount
+    checkAccount
 }

@@ -8,6 +8,7 @@ const router = express.Router()
 router.post('/', (req, res) => {
 
     mainPageCtrl.mainPagePost(req ,res)
+
 })
 
 router.get('/', (req, res) => {
