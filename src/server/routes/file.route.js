@@ -25,4 +25,14 @@ router.get('/userName', function (req, res) {
     userDataCtrl.getName(req, res)
 })
 
+router.get('/oldMessage/:roomName', function (req, res) {
+
+    chatMessageCtrl.getOldMessage(req.params.roomName).then((result)=>{
+        res.send(JSON.stringify(result))
+
+    }).catch((err)=>{
+        console.log(err)
+    })
+
+})
 export default router

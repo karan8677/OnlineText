@@ -78,13 +78,9 @@
 
             var onLoadMessage = JSON.parse(xhr.responseText)
             console.log(onLoadMessage)
-
-            // room.forEach(function(room) {
-            //   console.log(room);
-            // });
-
+            console.log(onLoadMessage.data.length)
         };
-        xhr.send();
+        
 
         xhr2.open("GET", "file/userName");
 
@@ -92,24 +88,20 @@
 
             var onLoadMessage = JSON.parse(xhr2.responseText)
             console.log(onLoadMessage)
-
-            // userName.forEach(function(userName) {
-            //   userAccount = userName
-            //   console.log(userName);
-            // });
+            
             webSocketList = {}
             webSocketList["messageName"] = "userAccount"
             webSocketList["data"] = onLoadMessage.data
             sendWebSocket(webSocketList)
 
         };
-        xhr2.send();
-
+        
 
 
 
         ws.onopen = () => {
-
+            xhr2.send();
+            xhr.send();
             console.log('open connection')
         }
 

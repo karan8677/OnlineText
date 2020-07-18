@@ -35,7 +35,7 @@ const mainPagePost = (req, res) => {
         if (result.verify === "verify") {
 
             const RoomID = req.body.RoomID
-            res.render('ChatTest', {
+            res.render('GroupChat', {
                 RoomID: RoomID
             })
 

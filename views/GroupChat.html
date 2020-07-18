@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style type="text/css">
+        body {
+            background-color: black;
+        }
+
+        .talk_con {
+            width: 650px;
+            height: 500px;
+            border: 1px solid #666;
+            margin-left: auto;
+            margin-right: auto;
+            background: #f9f9f9;
+        }
+
+        .talk_show {
+            display: none;
+            width: 580px;
+            height: 420px;
+            border: 1px solid #666;
+            background: #fff;
+            margin: 10px auto 0;
+            overflow: auto;
+        }
+
+        .talk_input {
+            width: 580px;
+            margin: 10px auto 0;
+        }
+
+        .talk_word {
+            width: 420px;
+            height: 26px;
+            padding: 0px;
+            float: left;
+            margin-left: 10px;
+            outline: none;
+            text-indent: 10px;
+        }
+
+        .talk_sub {
+            width: 56px;
+            height: 30px;
+            float: left;
+            margin-left: 10px;
+        }
+
+        .talk {
+            margin: 5px
+        }
+
+        .talk span {
+            display: inline-block;
+            background: #4a3a92;
+            border-radius: 0px;
+            color: rgb(255, 255, 255);
+            padding: 1px;
+        }
+
+        .active {
+            background-color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="talk_con" id="talk_con_id">
+
+        <!-- <div class="talk_show" id="talk_show_id1">
+            <div class="talk" id="talk_id1"><span id="say">這是第1個群組</span></div>
+        </div> -->
+
+        <form class="talk_form_id">
+            <div class="talk_input">
+                <input type="text" class="talk_word" id="talkwords">
+                <input type="reset" value="傳送" class="talk_sub" id="talksub">
+            </div>
+        </form>
+    </div>
+</body>
+<script type='text/javascript'>
+
+    var userAccount
+    var webSocketList = {}
+    var xhr_room = new XMLHttpRequest()
+    var xhr_userName = new XMLHttpRequest()
+
+    let ws = new WebSocket('ws://localhost:3000')
+
+
+    xhr_room.open("GET", "file/room");
+
+    xhr_room.onload = function () {
+
+        var onLoadMessage = JSON.parse(xhr_room.responseText)
+        console.log(onLoadMessage)
+        console.log(onLoadMessage.data.length)
+        creadRoom(onLoadMessage.data)
+    };
+
+
+    xhr_userName.open("GET", "file/userName");
+
+    xhr_userName.onload = function () {
+
+        var onLoadMessage = JSON.parse(xhr_userName.responseText)
+        console.log(onLoadMessage)
+
+        webSocketList = {}
+        webSocketList["messageName"] = "userAccount"
+        webSocketList["data"] = onLoadMessage.data
+        sendWebSocket(webSocketList)
+
+    };
+
+
+
+
+
+    function newMessage(message) {
+        var talk_show_fun = document.getElementsByClassName("talk_show");
+        var button_fun = document.getElementsByTagName("button");
+        console.log(message)
+        for (x = 0; x < talk_show_fun.length; x++) {
+            if (button_fun[x].innerHTML == message.roomName) {
+                talk_show_fun[x].innerHTML = talk_show_fun[x].innerHTML +
+                    '<div class="talk"><span>' +
+                    message.fromUserAccount +
+                    ': ' +
+                    message.message +
+                    '</span></div>';
+            }
+        }
+    }
+
+    function sendWebSocket(list) {
+        var data = JSON.stringify(list)
+        ws.send(data)
+    }
+
+
+    function creadRoom(roomMessage) {
+        var talk_getID, talk_createHTML, talk_span_getID, talk_span_createHTML;
+        var groupNum, q, r, button = [];
+        var talk_show_getID, talk_show_createHTML, Form;
+
+        groupNum = roomMessage.length;
+
+        for (q = 1; q <= groupNum; q++) {
+            talk_show_getID = document.getElementById("talk_con_id");
+            talk_show_createHTML = document.createElement("div");
+            talk_show_createHTML.className = "talk_show";
+            talk_show_createHTML.id = "talk_show_id" + q;
+            Form = document.querySelector(".talk_form_id");
+            talk_show_getID.insertBefore(talk_show_createHTML, Form);
+
+            talk_getID = document.getElementById("talk_show_id" + q);
+            talk_createHTML = document.createElement("div");
+            talk_createHTML.className = "talk";
+            talk_createHTML.id = "talk_id" + q;
+            talk_getID.appendChild(talk_createHTML);
+
+            talk_span_getID = document.getElementById("talk_id" + q);
+            talk_span_createHTML = document.createElement("span");
+            talk_span_createHTML.id = "say";
+            talk_span_createHTML.innerHTML = "這是第" + q + "個群組"
+            talk_span_getID.appendChild(talk_span_createHTML);
+        }
+
+        for (r = 1; r <= groupNum; r++) {
+            button = document.body.appendChild(document.createElement("button"));
+            button.id = "button" + r;
+            button.setAttribute("type", "button");
+            button.setAttribute("index", (r - 1));
+            button.innerHTML = roomMessage[r - 1].RoomName;
+        }
+
+        var button_fun = document.getElementsByTagName("button");
+        var talk_show_fun = document.getElementsByClassName("talk_show");
+        var TalkWords = document.getElementById("talkwords");
+        var TalkSub = document.getElementById("talksub");
+        var str = "";
+        var i, j, x;
+        for (i = 0; i < button_fun.length; i++) {
+            button_fun[i].index = i;
+            button_fun[i].onclick = function () {
+
+
+                for (j = 0; j < button_fun.length; j++) {
+                    button_fun[j].className = ''
+                }
+                for (i = 0; i < talk_show_fun.length; i++) {
+                    talk_show_fun[i].style.display = 'none';
+                }
+                button_fun[this.index].className = "active";
+                talk_show_fun[this.index].style.display = 'block';
+                x = button_fun[this.index].index;
+
+
+                var xhr_oldMessage = new XMLHttpRequest()
+                xhr_oldMessage.open("GET", "file/oldMessage/" + button_fun[x].innerHTML)
+                xhr_oldMessage.onload = function () {
+
+                    
+                    var onLoadMessage = JSON.parse(xhr_oldMessage.responseText)
+                    talk_show_fun[x].innerHTML = ''
+                    for (var message_num = 0; message_num < onLoadMessage.data.length; message_num++) {
+
+                        talk_show_fun[x].innerHTML += '<div class="talk"><span>' +
+                            onLoadMessage.data[message_num].UserAccount +
+                            ': ' +
+                            onLoadMessage.data[message_num].Message +
+                            '</span></div>';
+
+                    }
+
+                };
+                xhr_oldMessage.send();
+
+
+                TalkSub.onclick = function () {
+                    if (TalkWords.value == "") {
+                        alert("訊息不能為空");
+                        return;
+                    }
+                    webSocketList["messageName"] = "message"
+
+                    var messagePackage = {}
+                    messagePackage["message"] = TalkWords.value
+                    messagePackage["roomName"] = button_fun[x].innerHTML
+
+                    webSocketList["data"] = messagePackage
+                    ws.send(JSON.stringify(webSocketList))
+                }
+
+
+            }
+        }
+    }
+
+
+
+    ws.onopen = () => {
+        xhr_userName.send();
+        xhr_room.send();
+        console.log('open connection')
+    }
+
+    ws.onclose = () => {
+        console.log('close connection')
+    }
+
+    ws.onmessage = (data) => {
+        var parseData = JSON.parse(data.data)
+        switch (parseData.messageName) {
+            case "message":
+                newMessage(parseData.data)
+                break;
+            default:
+                break;
+        }
+    }
+</script>
+
+</html>

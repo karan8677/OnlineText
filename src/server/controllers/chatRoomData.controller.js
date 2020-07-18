@@ -2,7 +2,7 @@ import chatRoomModule from '../modules/chatRoom.module'
 import jwtModule from '../modules/jwt.module'
 
 const getRoomID = (req, res) => {
-	const token = req.cookies.token;
+    const token = req.cookies.token;
     jwtModule.jwtVerify(token).then((result) => {
 
         if (result.verify === "verify") {

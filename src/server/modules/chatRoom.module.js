@@ -13,7 +13,7 @@ const creatChatRoom = (insertValues) => {
 
     return new Promise((resolve, reject) => {
 
-    	connectionPool.getConnection((connectionError, connection) => {
+        connectionPool.getConnection((connectionError, connection) => {
 
             if (connectionError) {
 
@@ -21,22 +21,22 @@ const creatChatRoom = (insertValues) => {
 
             } else {
 
-                connection.query('insert INTO ChatRoom SET ?', {
+                var sqlCommand = "INSERT INTO ChatRoom(RoomName, Time, MemberNum, OwnID) VALUES('" +
+                    insertValues.roomName + "','" +
+                    "98-09-04" + "','" +
+                    insertValues.memberNum + "','" +
+                    insertValues.ownID + "')"
 
-                    RoomName: insertValues.roomName,
-                    Time: CurrentTime,
-                    MemberNum: insertValues.memberNum,
-                    OwnID: insertValues.ownID,
+                connection.query(sqlCommand, function (err, result) {
 
-                }, (error, result) => {
                     var resultPackage = {}
 
-                    if (error){
-                        console.error('SQL error:', error)
+                    if (err) {
+                        console.error('SQL error:', err)
                         resultPackage["success"] = "fail"
-                        // resolve(resultPackage);
-                        reject(error)
-                    }else{
+                        resolve(resultPackage);
+                        // reject(error)
+                    } else {
                         resultPackage["success"] = "success"
                         resultPackage["result"] = result
                         resolve(resultPackage);
@@ -44,7 +44,7 @@ const creatChatRoom = (insertValues) => {
                 })
 
                 connection.release()
-                
+
             }
         })
 
@@ -62,25 +62,70 @@ const getRoomID = (insertValues) => {
                 reject(connectionError)
 
             } else {
-                var sqlCommand = "SELECT RoomID FROM ChatRoom WHERE RoomName =" + 
-                                 insertValues.roomName
+                var sqlCommand = "SELECT RoomID FROM ChatRoom WHERE RoomName = '" +
+                    insertValues.roomName +
+                    "'"
 
-                connection.query(sqlCommand,function (error, result){
-
-                    if (error){
+                connection.query(sqlCommand, function (error, result) {
+                    var resultPackage ={}
+                    if (error) {
                         console.error('SQL error:', error)
                         resultPackage["success"] = "fail"
                         resolve(resultPackage);
                         // reject(error)
-                    }else{
+                    } else {
                         resultPackage["success"] = "success"
+                        resultPackage["result"] = result[0]
+                        resolve(resultPackage);
+                    }
+                })
+
+                connection.release()
+
+            }
+        })
+
+    })
+}
+
+const getRoomMember = (insertValues) => {
+
+    return new Promise((resolve, reject) => {
+
+        connectionPool.getConnection((connectionError, connection) => {
+
+            if (connectionError) {
+
+                reject(connectionError)
+
+            } else {
+                var sqlCommand = "SELECT member.UserID " +
+                    "FROM chatroom " +
+
+                    "INNER JOIN member " +
+                    "ON chatroom.RoomID = member.RoomID " +
+
+                    "WHERE chatroom.RoomName = '" +
+                    insertValues +
+                    "'"
+
+                connection.query(sqlCommand, function (error, result) {
+                    var resultPackage ={}
+                    if (error) {
+                        console.error('SQL error:', error)
+                        resultPackage["success"] = "fail"
+                        resolve(resultPackage);
+                        // reject(error)
+                    } else {
+                        resultPackage["success"] = "success"
+                        
                         resultPackage["result"] = result
                         resolve(resultPackage);
                     }
                 })
 
                 connection.release()
-                
+
             }
         })
 
@@ -88,5 +133,6 @@ const getRoomID = (insertValues) => {
 }
 export default {
     creatChatRoom,
-    getRoomID
+    getRoomID,
+    getRoomMember
 }

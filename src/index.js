@@ -2,17 +2,18 @@ import config from './config/config'
 import app from './config/express'
 import jwtModule from './server/modules/jwt.module'
 import chatMessageCtrl from './server/controllers/chatMessage.controller'
+import userDataMoudule from './server/modules/userData.module'
 import SocketServer from 'ws'
 var clients = []
 const server = require('http').createServer(app);
-const wss = new SocketServer.Server({ 
+const wss = new SocketServer.Server({
     server: server
     ,
     verifyClient: function (info, cb) {
         var token = info.req.headers.cookie
         var list = {}
-        
-        if (!token){
+
+        if (!token) {
             cb(false, 401, 'Unauthorized')
         }
         else {
@@ -45,29 +46,53 @@ wss.on('connection', ws => {
 
     clients.push(ws);
 
-
     ws.on('message', data => {
 
         var jsonData = JSON.parse(data)
         switch (jsonData.messageName) {
-            
+
 
             case "userAccount":
+                userDataMoudule.getUserID(jsonData.data).then((result) => {
+                    if (result.success === "success") {
+                        ws.account = jsonData.data
+                        ws.id = result.result.UserID
+                    } else if (result.success === "fail") {
 
-                ws.id = jsonData.data
+                    }
 
+                }).catch((err) => {
+                    res.send(err)
+                })
+
+                
                 break
-
+            
             case "message":
-                jsonData.data.roomName = 1
-                jsonData.data.fromUserID = 1
-                var result = chatMessageCtrl.saveMessage(jsonData.data)
+                jsonData.data.fromUserID = ws.id
+                jsonData.data.fromUserAccount = ws.account
+                chatMessageCtrl.saveMessage(jsonData.data).then((result) => {
 
-                // if (result.success === "success") {
+                    if (result.success === "success") {
+                        chatMessageCtrl.getMember(jsonData.data.roomName).then((result) => {
 
-                ws.send(JSON.stringify(jsonData))
-                // }
+                            
+                            for (var x = 0; x < clients.length; x++) {
 
+                                if (result.result.some(item => item.UserID === clients[x].id)) {
+                                    
+                                    clients[x].send(JSON.stringify(jsonData))
+                                }
+                            }
+
+                        }).catch((err) => {
+                            console.log(err)
+                        })
+
+                    }
+                }).catch((err)=>{
+                    console.log(err)
+                })
                 break
 
             default:

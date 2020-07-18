@@ -16,7 +16,9 @@ const checkAccount = (insertValues) => {
             if (connectionError) {
                 reject(connectionError)
             } else {
-                connection.query('Select UserPassword From account Where UserAccount = ?', insertValues.user_account, (error, result) => {
+                var sqlCommand = "Select UserPassword From account Where UserAccount = '" + insertValues.user_account + "'"
+
+                connection.query(sqlCommand, function(error, result){
                     var resultPackage = {}
                     if (error) {
 
