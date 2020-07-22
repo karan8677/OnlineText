@@ -1560,8 +1560,8 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
-clean-css@^3.1.9:
-  version "3.4.28"
+clean-css@^4.1.11:
+  version "4.1.11"
   resolved "https://registry.yarnpkg.com/clean-css/-/clean-css-3.4.28.tgz#bf1945e82fc808f55695e6ddeaec01400efd03ff"
   integrity sha1-vxlF6C/ICPVWlebd6uwBQA79A/8=
   dependencies:
@@ -1694,8 +1694,8 @@ console-browserify@^1.1.0:
   resolved "https://registry.yarnpkg.com/console-browserify/-/console-browserify-1.2.0.tgz#67063cef57ceb6cf4993a2ab3a55840ae8c49336"
   integrity sha512-ZMkYO/LkF17QvCPqM0gxw8yUzigAOZOSWSHg91FH6orS7vcEj5dVZTidN2fQ14yBSdg97RqhSNwLUXInd52OTA==
 
-constantinople@~3.0.1:
-  version "3.0.2"
+constantinople@~3.1.1:
+  version "3.1.1"
   resolved "https://registry.yarnpkg.com/constantinople/-/constantinople-3.0.2.tgz#4b945d9937907bcd98ee575122c3817516544141"
   integrity sha1-S5RdmTeQe82Y7ldRIsOBdRZUQUE=
   dependencies:
@@ -3284,7 +3284,7 @@ jade@^1.11.0:
     jstransformer "0.0.2"
     mkdirp "~0.5.0"
     transformers "2.1.0"
-    uglify-js "^2.4.19"
+    uglify-js "^2.6.0"
     void-elements "~2.0.1"
     with "~4.0.0"
 
