@@ -3,21 +3,9 @@ import jwtModule from '../modules/jwt.module'
 const mainPageGet = (req, res) => {
 
     const token = req.cookies.token;
-    jwtModule.jwtVerify(token).then((result) => {
+    jwtModule.jwtVerify(token).then((jwtVerify_result) => {
 
-        if (result.verify === "verify") {
-
-            res.render('RoomInput')
-
-        } else if (result.verify === "unverify") {
-
-            res.redirect('login')
-
-        } else {
-
-            res.redirect('login')
-
-        }
+        res.render('RoomInput')
 
     }).catch((err) => {
 
@@ -30,24 +18,12 @@ const mainPagePost = (req, res) => {
 
     const token = req.cookies.token;
 
-    jwtModule.jwtVerify(token).then((result) => {
+    jwtModule.jwtVerify(token).then((jwtVerify_result) => {
 
-        if (result.verify === "verify") {
-
-            const RoomID = req.body.RoomID
-            res.render('GroupChat', {
-                RoomID: RoomID
-            })
-
-        } else if (result.verify === "unverify") {
-
-            res.redirect('login')
-
-        } else {
-
-            res.redirect('login')
-
-        }
+        const RoomID = req.body.RoomID
+        res.render('GroupChat', {
+            RoomID: RoomID
+        })
 
     }).catch((error) => {
 

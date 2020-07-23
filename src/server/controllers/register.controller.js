@@ -3,23 +3,15 @@ import accountModule from '../modules/register.module'
 const registerPost = (req, res) => {
     const insertValues = req.body
 
-    accountModule.createAccount(insertValues).then((result) => {
-        if (result.success === "success") {
+    accountModule.createAccount(insertValues).then((createAccount_result) => {
 
-            res.redirect('verification')
-
-        } else if (result.success === "fail") {
-
-            res.redirect('register')
-
-        }
+        res.redirect('verification')
 
     }).catch((err) => {
 
         res.send(err)
 
     })
-
 
 }
 

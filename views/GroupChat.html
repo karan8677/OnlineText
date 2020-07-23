@@ -68,11 +68,6 @@
 
 <body>
     <div class="talk_con" id="talk_con_id">
-
-        <!-- <div class="talk_show" id="talk_show_id1">
-            <div class="talk" id="talk_id1"><span id="say">這是第1個群組</span></div>
-        </div> -->
-
         <form class="talk_form_id">
             <div class="talk_input">
                 <input type="text" class="talk_word" id="talkwords">
@@ -85,8 +80,12 @@
 
     var userAccount
     var webSocketList = {}
+
+
     var xhr_room = new XMLHttpRequest()
     var xhr_userName = new XMLHttpRequest()
+    var xhr_friendInvite = new XMLHttpRequest()
+    var xhr_groupInvite = new XMLHttpRequest()
 
     let ws = new WebSocket('ws://localhost:3000')
 
@@ -99,6 +98,25 @@
         console.log(onLoadMessage)
         console.log(onLoadMessage.data.length)
         creadRoom(onLoadMessage.data)
+
+    };
+
+    xhr_friendInvite.open("GET", "file/friendInvite");
+
+    xhr_friendInvite.onload = function () {
+
+        var onLoadMessage = JSON.parse(xhr_friendInvite.responseText)
+        console.log(onLoadMessage)
+
+    };
+
+    xhr_groupInvite.open("GET", "file/groupInvite");
+
+    xhr_groupInvite.onload = function () {
+
+        var onLoadMessage = JSON.parse(xhr_groupInvite.responseText)
+        console.log(onLoadMessage)
+
     };
 
 
@@ -244,6 +262,8 @@
 
 
     ws.onopen = () => {
+        xhr_groupInvite.send();
+        xhr_friendInvite.send();
         xhr_userName.send();
         xhr_room.send();
         console.log('open connection')
@@ -254,6 +274,7 @@
     }
 
     ws.onmessage = (data) => {
+        console.log(data)
         var parseData = JSON.parse(data.data)
         switch (parseData.messageName) {
             case "message":

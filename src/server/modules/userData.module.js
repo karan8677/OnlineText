@@ -27,17 +27,14 @@ const getUserRoom = (insertValues) => {
                     "WHERE member.UserID = " +
                     insertValues.UserID
 
-                connection.query(sqlCommand, function (error, result) {
-                    var resultPackage = {}
-                    if (error) {
-                        console.error('SQL error:', error)
-                        resultPackage["success"] = "fail"
-                        resolve(resultPackage);
-                        // reject(error)
+                connection.query(sqlCommand, function (err, result) {
+                    if (err) {
+                        console.error('SQL error:', err)
+                        reject(err)
                     } else {
-                        resultPackage["success"] = "success"
-                        resultPackage["result"] = result
-                        resolve(resultPackage);
+
+                        resolve(result);
+
                     }
                 })
 
@@ -61,26 +58,32 @@ const getUserFriend = (insertValues) => {
 
             } else {
 
-                var sqlCommand = "SELECT UserID1 FROM Friend WHERE UserID2 ='" +
-                    insertValues.memberID +
-                    "' " +
-                    "UNION SELECT UserID2 FROM Friend WHERE UserID1 ='" +
-                    insertValues.memberID +
-                    "'"
+                var sqlCommand = "SELECT Friend.UserID1 " +
+                    "FROM Account " +
+                    "INNER JOIN Friend " +
+                    "ON Friend.UserID2 = Account.UserID " +
+                    "WHERE member.UserID2 = " +
+                    insertValues.UserID +
 
-                connection.query(sqlCommand, function (error, result) {
-                    var resultPackage = {}
-                    if (error) {
-                        console.error('SQL error:', error)
-                        resultPackage["success"] = "fail"
-                        resolve(resultPackage);
-                        // reject(error)
-                    } else {
-                        resultPackage["success"] = "success"
-                        resultPackage["result"] = result
-                        resolve(resultPackage);
-                    }
-                })
+                    " UNION SELECT Friend.UserID2 " +
+                    "FROM Account " +
+                    "INNER JOIN Friend " +
+                    "ON Friend.UserID1 = Account.UserID " +
+                    "WHERE member.UserID1 = " +
+                    insertValues.UserID +
+
+                    connection.query(sqlCommand, function (err, result) {
+
+                        if (err) {
+
+                            console.error('SQL error:', err)
+                            reject(err)
+
+                        } else {
+
+                            resolve(result);
+                        }
+                    })
 
                 connection.release()
 
@@ -104,18 +107,17 @@ const getUserID = (insertValues) => {
             } else {
 
                 var sqlCommand = "SELECT UserID FROM Account WHERE UserAccount = '" + insertValues + "'"
-                connection.query(sqlCommand, function (error, result) {
+                connection.query(sqlCommand, function (err, result) {
                     var resultPackage = {}
-                    if (error) {
-                        console.error('SQL error:', error)
-                        resultPackage["success"] = "fail"
+                    if (err) {
 
-                        // resolve(resultPackage);
-                        reject(error)
+                        console.error('SQL error:', err)
+                        reject(err)
+
                     } else {
-                        resultPackage["success"] = "success"
-                        resultPackage["result"] = result[0]
-                        resolve(resultPackage);
+
+                        resolve(result[0]);
+
                     }
                 })
 
@@ -140,18 +142,16 @@ const getUserName = (insertValues) => {
             } else {
 
                 var sqlCommand = "SELECT UserID FROM Account WHERE UserAccount = '" + insertValues._id + "'"
-                connection.query(sqlCommand, function (error, result) {
-                    var resultPackage = {}
-                    if (error) {
-                        console.error('SQL error:', error)
-                        resultPackage["success"] = "fail"
+                connection.query(sqlCommand, function (err, result) {
+                    if (err) {
 
-                        // resolve(resultPackage);
-                        reject(error)
+                        console.error('SQL error:', err)
+                        reject(err)
+
                     } else {
-                        resultPackage["success"] = "success"
-                        resultPackage["result"] = result[0]
-                        resolve(resultPackage);
+
+                        resolve(result[0]);
+
                     }
                 })
 

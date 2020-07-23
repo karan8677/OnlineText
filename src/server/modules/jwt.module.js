@@ -9,18 +9,14 @@ const jwtVerify = (token)=>{
 
         jwt.verify(token, SECRET, (err, payload) =>{
             
-            var resultPackage = {}
-
             if(err){
                 console.error('verify error:', err)
-                resultPackage["verify"] = "unverify"
-                resolve(resultPackage);
-                // reject(err)
+                reject(err)
 
             }else{
-                resultPackage["verify"] = "verify"
-                resultPackage["payload"] = payload
-                resolve(resultPackage);
+
+                resolve(payload);
+
             }
         })
     })

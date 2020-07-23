@@ -1,24 +1,17 @@
 import messageModule from '../modules/message.module'
-import userDataModule from '../modules/userData.module'
 import chatRoomModule from '../modules/chatRoom.module'
+import redis from 'redis'
 
 const getMember = (data) => {
     return new Promise((resolve, reject) => {
-        
-        chatRoomModule.getRoomMember(data).then((result) => {
 
-            if (result.success === "success") {
-                resolve(result)
+        chatRoomModule.getRoomMember(data).then((getRoomMember_result) => {
 
-            } else if (result.success === "fail") {
-
-                resolve(result)
-
-            }
+            resolve(getRoomMember_result)
 
         }).catch((err) => {
 
-            resolve(result)
+            reject(err)
 
         })
     })
@@ -26,39 +19,26 @@ const getMember = (data) => {
 }
 
 var saveMessage = (data) => {
+
     return new Promise((resolve, reject) => {
-        chatRoomModule.getRoomID(data).then((result) => {
 
-            if (result.success === "success") {
-                
-                data.roomID = result.result.RoomID
-                messageModule.saveMessage(data).then((result) => {
+        chatRoomModule.getRoomID(data).then((getRoomID_result) => {
 
-                    if (result.success === "success") {
-                        resolve(result)
-                        
-                    } else if (result.success === "fail") {
+            data.roomID = getRoomID_result.RoomID
+            messageModule.saveMessage(data).then((saveMessage_result) => {
 
-                        resolve(result)
-
-                    }
-
-                }).catch((err) => {
-
-                    resolve(result)
-
-                })
+                resolve(saveMessage_result)
 
 
-            } else if (result.success === "fail") {
+            }).catch((err) => {
 
-                return result
+                reject(err)
 
-            }
-            
+            })
+
         }).catch((err) => {
 
-            return result
+            reject(err)
 
         })
     })
@@ -66,28 +46,52 @@ var saveMessage = (data) => {
 
 const getOldMessage = (data) => {
     return new Promise((resolve, reject) => {
-        messageModule.getChatPreloadMessage(data).then((result) => {
 
-            if (result.success == "success") {
+        const client = redis.createClient();
+        client.on('connect', () => {
 
+            console.log('Redis client connected');
 
+        });
+
+        client.LRANGE(data + "_message", 0, 50, (err, result) => {
+
+            if (result.length != 0) {
                 var jsonpackage = {}
                 jsonpackage["messageName"] = "getOldMessage"
-                jsonpackage["data"] = result.result
+                for (let x = 0; x < result.length; x++){
+                    result[x] = JSON.parse(result[x])
+                }
+                jsonpackage["data"] = result
                 resolve(jsonpackage)
 
             } else {
+                messageModule.getChatPreloadMessage(data).then((getChatPreloadMessage_result) => {
 
-                resolve(result)
+                    var jsonpackage = {}
+                    jsonpackage["messageName"] = "getOldMessage"
+                    jsonpackage["data"] = getChatPreloadMessage_result
+
+                    for (var x = 0; x < jsonpackage.data.length; x++) {
+                        client.RPUSH(data + "_message", JSON.stringify(jsonpackage.data[x]));
+                    }
+                    resolve(jsonpackage)
+
+                }).catch((err) => {
+
+                    reject(err)
+                })
+
+            }
+            if (err) {
+                console.log(err);
+                throw err;
             }
 
-        }).catch((err) => {
+        });
 
-            resolve(result)
-        })
     })
 
-    
 }
 
 export default {

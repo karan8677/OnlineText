@@ -20,30 +20,32 @@ const saveMessage = (insertValues) => {
                 reject(connectionError)
 
             } else {
+                var today = new Date();
+                var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+                var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+                var dateTime = date + ' ' + time;
 
                 var sqlCommand = "INSERT INTO Message(RoomID, FromUserID, Time, Message) VALUES('" +
                     insertValues.roomID + "','" +
                     insertValues.fromUserID + "','" +
-                    "98-09-04" + "','" +
+                    dateTime + "','" +
                     insertValues.message + "')"
 
 
                 connection.query(sqlCommand, function (err, result) {
 
-                    var resultPackage = {}
 
                     if (err) {
+
                         console.error('SQL error:', err)
-                        resultPackage["success"] = "fail"
-                        resolve(resultPackage);
-                        // reject(error)
+                        reject(err)
+
                     } else {
-                        resultPackage["success"] = "success"
-                        resultPackage["result"] = result
-                        resolve(resultPackage);
+
+                        resolve(result);
                     }
                 })
-
+                resolve(0);
                 connection.release()
 
             }
@@ -69,20 +71,22 @@ const getChatPreloadMessage = (insertValues) => {
                     "ON account.UserID = message.FromUserID " +
 
                     "WHERE chatroom.RoomName = " +
-                    insertValues
+                    insertValues +
+
+                    " ORDER BY message.MessageID " +
+                    "limit 50";
 
                 connection.query(sqlCommand, function (err, result) {
-                    
-                    var resultPackage = {}
+
                     if (err) {
+
                         console.error('SQL error:', err)
-                        resultPackage["success"] = "fail"
-                        resolve(resultPackage);
-                        // reject(error)
+                        reject(err)
+
                     } else {
-                        resultPackage["success"] = "success"
-                        resultPackage["result"] = result
-                        resolve(resultPackage);
+
+                        resolve(result);
+
                     }
                 })
                 connection.release()

@@ -1,40 +1,18 @@
 import userDataModule from '../modules/userData.module'
-import messageModule from '../modules/message.module'
 import jwtModule from '../modules/jwt.module'
 
 const getRoom = (req, res) => {
     const token = req.cookies.token;
-    jwtModule.jwtVerify(token).then((result) => {
+    jwtModule.jwtVerify(token).then((jwtVerify_result) => {
 
-        if (result.verify === "verify") {
+        userDataModule.getUserID(jwtVerify_result._id).then((getUserID_result) => {
 
-            userDataModule.getUserID(result.payload._id).then((result) => {
+            userDataModule.getUserRoom(getUserID_result).then((getUserRoom_result) => {
 
-                if (result.success === "success") {
-                    userDataModule.getUserRoom(result.result).then((result) => {
-
-                        if (result.success === "success") {
-                            var jsonpackage = {}
-                            jsonpackage["messageName"] = "userRoom"
-                            jsonpackage["data"] = result.result
-                            res.send(JSON.stringify(jsonpackage))
-                        } else if (result.success === "fail") {
-
-                            // res.redirect('OnlineText')
-
-                        }
-
-                    }).catch((err) => {
-
-                        res.send(err)
-
-                    })
-
-                } else if (result.success === "fail") {
-
-                    res.redirect('OnlineText')
-
-                }
+                    var jsonpackage = {}
+                    jsonpackage["messageName"] = "userRoom"
+                    jsonpackage["data"] = getUserRoom_result
+                    res.send(JSON.stringify(jsonpackage))
 
             }).catch((err) => {
 
@@ -42,13 +20,11 @@ const getRoom = (req, res) => {
 
             })
 
+        }).catch((err) => {
 
+            res.send(err)
 
-        } else if (result.verify === "unverify") {
-
-            res.redirect('login')
-
-        }
+        })
 
     }).catch((err) => {
 
@@ -59,42 +35,16 @@ const getRoom = (req, res) => {
 }
 const getFriend = (req, res) => {
     const token = req.cookies.token;
-    jwtModule.jwtVerify(token).then((result) => {
+    jwtModule.jwtVerify(token).then((jwtVerify_result) => {
 
-        if (result.verify === "verify") {
+        userDataModule.getName(jwtVerify_result).then((getName_result) => {
 
-            userDataModule.getName(result.payload).then((result) => {
+            userDataModule.getFriend(getName_result).then((getFriend_result) => {
 
-                if (result.success === "success") {
-
-                    userDataModule.getFriend(result.result).then((result) => {
-
-                        if (result.success === "success") {
-
-                            var jsonpackage = {}
-                            jsonpackage["messageName"] = "userFriend"
-                            jsonpackage["data"] = result.result
-                            res.send(JSON.stringify(jsonpackage))
-
-                        } else if (result.success === "fail") {
-
-                            // res.redirect('OnlineText')
-
-                        }
-
-                    }).catch((err) => {
-
-                        res.send(err)
-
-                    })
-
-                    res.send(JSON.stringify())
-
-                } else if (result.success === "fail") {
-
-                    // res.redirect('OnlineText')
-
-                }
+                    var jsonpackage = {}
+                    jsonpackage["messageName"] = "userFriend"
+                    jsonpackage["data"] = getFriend_result
+                    res.send(JSON.stringify(jsonpackage))
 
             }).catch((err) => {
 
@@ -102,12 +52,13 @@ const getFriend = (req, res) => {
 
             })
 
+            res.send(JSON.stringify())
 
-        } else if (result.verify === "unverify") {
+        }).catch((err) => {
 
-            // res.redirect('login')
+            res.send(err)
 
-        }
+        })
 
     }).catch((err) => {
 
@@ -121,35 +72,21 @@ const getID = (req, res) => {
 
     const token = req.cookies.token;
 
-    jwtModule.jwtVerify(token).then((result) => {
+    jwtModule.jwtVerify(token).then((jwtVerify_result) => {
 
-        if (result.verify === "verify") {
 
-            userDataModule.getUserName(result.payload).then((result) => {
-                if (result.success === "success") {
+        userDataModule.getUserName(jwtVerify_result).then((getUserName_result) => {
 
-                    var jsonpackage = {}
-                    jsonpackage["messageName"] = "userAccount"
-                    jsonpackage["data"] = result.result
-                    res.send(JSON.stringify(jsonpackage))
+            var jsonpackage = {}
+            jsonpackage["messageName"] = "userAccount"
+            jsonpackage["data"] = getUserName_result
+            res.send(JSON.stringify(jsonpackage))
 
-                } else if (result.success === "fail") {
+        }).catch((err) => {
 
-                    // res.redirect('OnlineText')
+            res.send(err)
 
-                }
-
-            }).catch((err) => {
-
-                res.send(err)
-
-            })
-
-        } else if (result.verify === "unverify") {
-
-            // res.redirect('login')
-
-        }
+        })
 
     }).catch((err) => {
 
@@ -163,19 +100,13 @@ const getName = (req, res) => {
 
     const token = req.cookies.token;
 
-    jwtModule.jwtVerify(token).then((result) => {
+    jwtModule.jwtVerify(token).then((jwtVerify_result) => {
 
-        if (result.verify === "verify") {
 
-            var jsonpackage = {}
-            jsonpackage["messageName"] = "userAccount"
-            jsonpackage["data"] = result.payload._id
-            res.send(JSON.stringify(jsonpackage))
-        } else if (result.verify === "unverify") {
-
-            // res.redirect('login')
-
-        }
+        var jsonpackage = {}
+        jsonpackage["messageName"] = "userAccount"
+        jsonpackage["data"] = jwtVerify_result._id
+        res.send(JSON.stringify(jsonpackage))
 
     }).catch((err) => {
 

@@ -2,52 +2,36 @@ import accountModule from '../modules/login.module'
 import jwtModule from '../modules/jwt.module'
 
 const loginPost = (req, res) => {
+
     const insertValues = req.body
 
-    jwtModule.jwtSetCookie(insertValues.user_account, res).then((result) => {
+    accountModule.checkAccount(insertValues).then((checkAccount_result) => {
 
-        if (result === "CookieSet") {
+        jwtModule.jwtSetCookie(insertValues.user_account, res).then((jwtSetCookie_result) => {
 
-            accountModule.checkAccount(insertValues).then((result) => {
+            if (jwtSetCookie_result === "CookieSet") {
 
-                if (result.success === "success") {
+                res.redirect('mainPage');
 
+            } else {
 
-                    res.redirect('mainPage');
+                res.render("Login", {
+                    success: false
+                })
 
-                } else if (result.success === "fail") {
+            }
 
-                    res.render("Login", {
-                        success: false
-                    })
+        }).catch((err) => {
 
-                }
+            res.send(err)
 
-            }).catch((err) => {
-
-                res.send(err)
-
-            })
-
-        } else {
-
-            res.render("Login", {
-                success: false
-            })
-
-        }
-
-
+        })
 
     }).catch((err) => {
 
         res.send(err)
 
     })
-
-
-
-
 
 }
 export default {

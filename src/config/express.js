@@ -21,15 +21,14 @@ app.set("view engine", "jade")
 /* GET home page. */
 app.upload = function (req, res) {
     console.log(req.body)
-    //{ user: 'qiangzi' }
 };
+
 app.get('/', (req, res) => {
     res.send(`server started express on  port http://127.0.0.1:${config.port} (${config.env})`)
 })
 app.use('/OnlineText', index)
 
 app.use(express.static(path.join('C:/OnlineText/', 'public')));
-
 
 app.use(function (req, res) {
     res.status(404).render('404page')

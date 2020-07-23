@@ -1,9 +1,12 @@
+import redis from 'redis'
 import config from './config/config'
 import app from './config/express'
 import jwtModule from './server/modules/jwt.module'
 import chatMessageCtrl from './server/controllers/chatMessage.controller'
 import userDataMoudule from './server/modules/userData.module'
 import SocketServer from 'ws'
+
+
 var clients = []
 const server = require('http').createServer(app);
 const wss = new SocketServer.Server({
@@ -21,19 +24,14 @@ const wss = new SocketServer.Server({
                 var parts = cookie.split('=');
                 list[parts.shift().trim()] = decodeURI(parts.join('='));
             })
-            jwtModule.jwtVerify(list.token).then((result) => {
+            jwtModule.jwtVerify(list.token).then((jwtVerify_result) => {
 
-                if (result.verify === "verify") {
-                    cb(true);
-                } else if (result.verify === "unverify") {
-                    cb(false, 401, 'Unauthorized')
-                } else {
-                    cb(false, 401, 'Unauthorized')
-                }
+                cb(true);
 
             }).catch((err) => {
 
                 console.log(err)
+                cb(false, 401, 'Unauthorized')
 
             })
 
@@ -53,44 +51,46 @@ wss.on('connection', ws => {
 
 
             case "userAccount":
-                userDataMoudule.getUserID(jsonData.data).then((result) => {
-                    if (result.success === "success") {
-                        ws.account = jsonData.data
-                        ws.id = result.result.UserID
-                    } else if (result.success === "fail") {
+                userDataMoudule.getUserID(jsonData.data).then((getUserID_result) => {
 
-                    }
+                    ws.account = jsonData.data
+                    ws.id = getUserID_result.UserID
 
                 }).catch((err) => {
                     res.send(err)
                 })
 
-                
+
                 break
-            
+
             case "message":
                 jsonData.data.fromUserID = ws.id
                 jsonData.data.fromUserAccount = ws.account
-                chatMessageCtrl.saveMessage(jsonData.data).then((result) => {
+                chatMessageCtrl.saveMessage(jsonData.data).then((saveMessage_result) => {
 
-                    if (result.success === "success") {
-                        chatMessageCtrl.getMember(jsonData.data.roomName).then((result) => {
+                    chatMessageCtrl.getMember(jsonData.data.roomName).then((getMember_result) => {
 
-                            
-                            for (var x = 0; x < clients.length; x++) {
 
-                                if (result.result.some(item => item.UserID === clients[x].id)) {
-                                    
-                                    clients[x].send(JSON.stringify(jsonData))
-                                }
+                        const client = redis.createClient(); // this creates a new client
+                        client.on('connect', () => {
+                            console.log('Redis client connected');
+                        });
+                        client.RPUSH(jsonData.data.roomName + "_message", JSON.stringify(jsonData.data));
+
+                        for (var x = 0; x < clients.length; x++) {
+
+                            if (getMember_result.some(item => item.UserID === clients[x].id)) {
+
+                                clients[x].send(JSON.stringify(jsonData))
+
                             }
+                        }
 
-                        }).catch((err) => {
-                            console.log(err)
-                        })
+                    }).catch((err) => {
+                        console.log(err)
+                    })
 
-                    }
-                }).catch((err)=>{
+                }).catch((err) => {
                     console.log(err)
                 })
                 break
@@ -112,7 +112,6 @@ wss.on('connection', ws => {
         }
 
     })
-
 
 })
 

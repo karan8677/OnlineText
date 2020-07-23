@@ -29,18 +29,16 @@ const creatChatRoom = (insertValues) => {
 
                 connection.query(sqlCommand, function (err, result) {
 
-                    var resultPackage = {}
-
                     if (err) {
+
                         console.error('SQL error:', err)
-                        resultPackage["success"] = "fail"
-                        resolve(resultPackage);
-                        // reject(error)
+                        reject(err)
+
                     } else {
-                        resultPackage["success"] = "success"
-                        resultPackage["result"] = result
-                        resolve(resultPackage);
+
+                        resolve(result);
                     }
+                    
                 })
 
                 connection.release()
@@ -66,17 +64,14 @@ const getRoomID = (insertValues) => {
                     insertValues.roomName +
                     "'"
 
-                connection.query(sqlCommand, function (error, result) {
-                    var resultPackage ={}
-                    if (error) {
-                        console.error('SQL error:', error)
-                        resultPackage["success"] = "fail"
-                        resolve(resultPackage);
-                        // reject(error)
+                connection.query(sqlCommand, function (err, result) {
+
+                    if (err) {
+                        console.error('SQL error:', err)
+                        reject(err)
                     } else {
-                        resultPackage["success"] = "success"
-                        resultPackage["result"] = result[0]
-                        resolve(resultPackage);
+
+                        resolve(result[0]);
                     }
                 })
 
@@ -109,18 +104,17 @@ const getRoomMember = (insertValues) => {
                     insertValues +
                     "'"
 
-                connection.query(sqlCommand, function (error, result) {
+                connection.query(sqlCommand, function (err, result) {
                     var resultPackage ={}
-                    if (error) {
-                        console.error('SQL error:', error)
-                        resultPackage["success"] = "fail"
-                        resolve(resultPackage);
-                        // reject(error)
+                    if (err) {
+
+                        console.error('SQL error:', err)
+                        reject(err)
+
                     } else {
-                        resultPackage["success"] = "success"
                         
-                        resultPackage["result"] = result
-                        resolve(resultPackage);
+                        resolve(result);
+                        
                     }
                 })
 

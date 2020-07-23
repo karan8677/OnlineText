@@ -20,23 +20,24 @@ const createAccount = (insertValues) => {
                 reject(connectionError)
 
             } else {
+
                 var sqlCommand = "INSERT INTO Account(UserAccount, UserPassword) VALUES('" +
                     insertValues.user_account + "','" +
                     insertValues.user_password + "')"
                
-                connection.query(sqlCommand, function(error, result){
-                    var resultPackage = {}
-                    if (error) {
-                        console.log(sqlCommand)
-                        console.error('SQL error:', error)
-                        resultPackage["success"] = "fail"
-                        resolve(resultPackage);
-                        // reject(error)
+                connection.query(sqlCommand, function(err, result){
+
+                    if (err) {
+
+                        console.error('SQL error:', err)
+                        reject(err)
+
                     } else {
-                        resultPackage["success"] = "success"
-                        resultPackage["result"] = result
-                        resolve(resultPackage);
+
+                        resolve(result);
+
                     }
+                    
                 })
 
                 connection.release()

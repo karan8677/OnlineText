@@ -56,10 +56,6 @@ html
       }
   body
     #talk_con_id.talk_con
-      //
-        <div class="talk_show" id="talk_show_id1">
-        <div class="talk" id="talk_id1"><span id="say">這是第1個群組</span></div>
-        </div>
       form.talk_form_id
         .talk_input
           input#talkwords.talk_word(type='text')
@@ -69,6 +65,8 @@ html
       var webSocketList = {}
       var xhr_room = new XMLHttpRequest()
       var xhr_userName = new XMLHttpRequest()
+      var xhr_friendInvite = new XMLHttpRequest()
+      var xhr_groupInvite = new XMLHttpRequest()
       let ws = new WebSocket('ws://localhost:3000')
       xhr_room.open("GET", "file/room");
       xhr_room.onload = function () {
@@ -76,6 +74,16 @@ html
       console.log(onLoadMessage)
       console.log(onLoadMessage.data.length)
       creadRoom(onLoadMessage.data)
+      };
+      xhr_friendInvite.open("GET", "file/friendInvite");
+      xhr_friendInvite.onload = function () {
+      var onLoadMessage = JSON.parse(xhr_friendInvite.responseText)
+      console.log(onLoadMessage)
+      };
+      xhr_groupInvite.open("GET", "file/groupInvite");
+      xhr_groupInvite.onload = function () {
+      var onLoadMessage = JSON.parse(xhr_groupInvite.responseText)
+      console.log(onLoadMessage)
       };
       xhr_userName.open("GET", "file/userName");
       xhr_userName.onload = function () {
@@ -183,6 +191,8 @@ html
       }
       }
       ws.onopen = () => {
+      xhr_groupInvite.send();
+      xhr_friendInvite.send();
       xhr_userName.send();
       xhr_room.send();
       console.log('open connection')
@@ -191,6 +201,7 @@ html
       console.log('close connection')
       }
       ws.onmessage = (data) => {
+      console.log(data)
       var parseData = JSON.parse(data.data)
       switch (parseData.messageName) {
       case "message":

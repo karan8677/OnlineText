@@ -2,34 +2,20 @@ import chatRoomModule from '../modules/chatRoom.module'
 import jwtModule from '../modules/jwt.module'
 
 const getRoomID = (req, res) => {
+
     const token = req.cookies.token;
-    jwtModule.jwtVerify(token).then((result) => {
 
-        if (result.verify === "verify") {
+    jwtModule.jwtVerify(token).then((jwtVerify_result) => {
 
-            chatRoomModule.getRoomID(result.payload).then((result) => {
+        chatRoomModule.getRoomID(jwtVerify_result).then((getRoomID_result) => {
 
-                if (result.success === "success") {
+            res.send(JSON.stringify(getRoomID_result))
 
-                    res.send(JSON.stringify(result.result))
+        }).catch((err) => {
 
-                } else if (result.success === "fail") {
+            res.send(err)
 
-                    // res.redirect('OnlineText')
-
-                }
-
-            }).catch((err) => {
-
-                res.send(err)
-
-            })
-
-        } else if (result.verify === "unverify") {
-
-            // res.redirect('login')
-
-        }
+        })
 
     }).catch((err) => {
 

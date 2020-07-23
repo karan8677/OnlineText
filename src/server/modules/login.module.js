@@ -10,34 +10,39 @@ const connectionPool = mysql.createPool({
 })
 
 const checkAccount = (insertValues) => {
+
     return new Promise((resolve, reject) => {
 
         connectionPool.getConnection((connectionError, connection) => {
+
             if (connectionError) {
+
                 reject(connectionError)
+
             } else {
+
                 var sqlCommand = "Select UserPassword From account Where UserAccount = '" + insertValues.user_account + "'"
 
-                connection.query(sqlCommand, function(error, result){
-                    var resultPackage = {}
-                    if (error) {
+                connection.query(sqlCommand, function(err, result){
 
-                        console.error('SQL error:', error)
-                        resultPackage["success"] = "fail"
-                        // resolve(resultPackage);
-                        reject(error)
+                    if (err) {
+
+                        console.error('SQL error:', err)
+                        reject(err)
                         
+                    } else if (result.length == 0) {
+
+                        reject("Account no found")
+
                     } else if (result[0].UserPassword === insertValues.user_password) {
 
-                        resultPackage["success"] = "success"
-                        resultPackage["result"] = result
-                        resolve(resultPackage);
+                        resolve(result);
 
                     } else {
-                        console.error('SQL error:', error)
-                        resultPackage["success"] = "fail"
-                        // resolve(resultPackage);
-                        reject(error)
+
+                        console.error('SQL error:', err)
+                        reject(err)
+                        
                     }
 
                 })
