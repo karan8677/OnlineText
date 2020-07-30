@@ -1,0 +1,215 @@
+@media screen{
+    body{
+        background-image: url("/images/MainBackground.jpg");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: left;
+        background-attachment: fixed;
+        overflow: hidden;
+    }
+    .menu{
+        height: 900px;
+        width: 300px;
+        float: left;
+    }
+    .menu .GroupSelect{
+        height: 920px;
+        width: 90px;
+        position: absolute;
+        left: 6px;
+    }
+    .menu .GroupSelect .MainIcon{
+        height: 50px;
+        width: 50px;
+        background-image: url("/images/MainIcon.png");
+        background-size: cover;
+        background-repeat: no-repeat;
+        cursor: pointer;
+        position: absolute;
+        left: 20px;
+        top: 10px;
+    }
+    .MainIconBackGround{
+        height: 60px;
+        width: 60px;
+        background-color: white;
+        border-radius: 30px;
+        position: absolute;
+        left: 15px;
+        top: 4px;
+    }
+    .GroupIconBackGround{
+        height: 60px;
+        width: 60px;
+        background-color: transparent;
+        border-radius: 30px;
+        margin-top: 10px;
+        position: relative;
+        left: 15px;
+        top: 80px;
+    }
+    .GroupIconBackGroundOnMouseover{
+        height: 60px;
+        width: 60px;
+        background-color: transparent;
+        border-radius: 20px;
+        margin-top: 10px;
+        position: relative;
+        left: 15px;
+        top: 80px;
+    }
+    .MainIconForGroup{
+        height: 50px;
+        width: 50px;
+        background-image: url("/images/MainIcon.png");
+        background-size: cover;
+        background-repeat: no-repeat;
+        border: none;
+        outline: none;
+        background-color: transparent;
+        cursor: pointer;
+        position: relative;
+        left: 20px;
+        top: 25px;
+    }
+    .StraightLine{
+        display: none;
+        height: 20px;
+        width: 3px;
+        border-left: solid #fff 3px;
+        position: absolute;
+        top: 25px;
+    }
+    .StraightLineForGroup{
+        display: none;
+        height: 20px;
+        width: 3px;
+        border-left: solid #fff 3px;
+        position: relative;
+        bottom: 5px;
+    }
+    .menu .DialogBoxContent{
+        display: none;
+        width:40px;
+        height:15px;
+        text-align:center;
+        color:white;
+        background:rgb(107, 107, 107);
+        border-radius: 5px;
+        position:relative;
+        border: solid 1px #333;
+        margin:1px;
+        padding:5px;
+        left: 60px;
+        top: 10px;
+    }
+    .menu .DialogBoxContent::before{
+        content: "";
+        width: 0px;
+        height: 0px;
+        font-size: 0px;
+        overflow: hidden;
+        display: block;
+        border-width: 5px;
+        border-color: transparent rgb(107, 107, 107) transparent transparent;
+        border-style: dashed solid dashed dashed;
+        position: absolute;
+        left: -10px;
+        bottom: 7px;
+    }
+    .menu .DialogBoxContentForGroup{
+        display: none;
+        width:80px;
+        height:30px;
+        text-align:center;
+        line-height: 30px;
+        color:white;
+        background:rgb(107, 107, 107);
+        border-radius: 5px;
+        position:relative;
+        border: solid 1px #333;
+        margin:1px;
+        padding:5px;
+        left: 60px;
+        top: 10px;
+    }
+    .menu .DialogBoxContentForGroup::before{
+        content: "";
+        width: 0px;
+        height: 0px;
+        font-size: 0px;
+        overflow: hidden;
+        display: block;
+        border-width: 5px;
+        border-color: transparent rgb(107, 107, 107) transparent transparent;
+        border-style: dashed solid dashed dashed;
+        position: absolute;
+        left: -10px;
+        bottom: 15px;
+    }
+    .menu .GroupName{
+        display: none;
+        height: 65px;
+        width: 200px;
+        color: white;
+        font-size: 20px;
+        line-height: 65px;
+        position: absolute;
+        left: 110px;
+    }
+    .menu .MessageChannel{
+        height: 830px;
+        width: 200px;
+        /* background-color: yellow; */
+        position: absolute;
+        left: 110px;
+        top: 95px;
+    }
+    .content{
+        height: 900px;
+        width: 100vw;
+    }
+    .content .Banner{
+        height: 70px;
+        width: 1590px;
+        /* background-color: purple; */
+        position: absolute;
+        left: 325px;
+    }
+    .content .ChatScreen{
+        /* display: none; */
+        height: 830px;
+        width: 1310px;
+        position: absolute;
+        left: 335px;
+        top: 95px;
+    }
+    .content .ChatScreen .Talk{
+        display: none;
+        height: 770px;
+        width: 1310px;
+        color: white;
+        position: absolute;
+        left: 10px;
+    }
+    .content .ChatScreen .InputText{
+        height: 40px;
+        width: 1200px;
+        background-color: rgb(63, 30, 230);
+        border-radius: 10px;
+        position: absolute;
+        left: 65px;
+        top: 780px;
+        font-size: 16px;
+        color: white;
+    }
+    .TalkSub{
+        color:white;
+        background-color: transparent;
+        border: none;
+        outline: none;
+        position: absolute;
+        top: 790px;
+        left: 1220px;
+    }
+}

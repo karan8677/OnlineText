@@ -52,30 +52,25 @@
         <div class="row row-centerd">
             <div class="col-xs-6 col-md-4 col-center-block">
                 <h1 class="textcolor">註冊頁面</h1>
-                <form action="verification.html" method="GET" name="register_form" onsubmit="return register_check()">
-                    <div class="form-group">
-                        <label for="InputEmail" class="textcolor">電子郵件</label>
-                        <input type="email" class="form-control" id="InputEmail_register" name="InputEmail_register"
-                            placeholder="請輸入您的信箱">
-                    </div>
-                    <div id="InputEmail_register_alert"></div>
-                    <div class="form-group">
-                        <label for="InputPassword" class="textcolor">密碼</label>
-                        <input type="password" class="form-control" id="InputPassword_register"
-                            name="InputPassword_register" placeholder="請設定您的密碼">
-                    </div>
-                    <div id="InputPassword_register_alert"></div>
-                    <div class="form-group">
-                        <label for="InputPassword_repeat" class="textcolor">重複輸入密碼</label>
-                        <input type="password" class="form-control" id="InputPassword_register_repeat"
-                            name="InputPassword_register_repeat" placeholder="請重複輸入密碼">
-                    </div>
-                    <div id="InputPassword_register_repeat_alert"></div>
-                    <div id="PasswordError_alert"></div>
-                    <div>
-                        <button type="submit" class="btn btn-default" id="register" name="register">註冊</button>
-                    </div>
-                </form>
+                <div class="form-group">
+                    <label for="InputEmail" class="textcolor">電子郵件</label>
+                    <input type="email" class="form-control" id="InputEmail_register" name="InputEmail_register"
+                        placeholder="請輸入您的信箱">
+                </div>
+                <div class="form-group">
+                    <label for="InputPassword" class="textcolor">密碼</label>
+                    <input type="password" class="form-control" id="InputPassword_register"
+                        name="InputPassword_register" placeholder="請設定您的密碼">
+                </div>
+                <div class="form-group">
+                    <label for="InputPassword_repeat" class="textcolor">重複輸入密碼</label>
+                    <input type="password" class="form-control" id="InputPassword_register_repeat"
+                        name="InputPassword_register_repeat" placeholder="請重複輸入密碼">
+                </div>
+                <div>
+                    <button class="btn btn-default" id="register" name="register">註冊</button>
+                </div>
+                <label id="error" class="textcolor"></label>
             </div>
         </div>
     </div>
@@ -84,24 +79,52 @@
     <script src="/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
 
     <script>
+        document.getElementById('register').onclick = function () {
+
+            if(register_check()){
+                var xhr_register = new XMLHttpRequest()
+
+                xhr_register.open("POST", "file/register/" + document.getElementById('InputEmail_register').value + "/" + document.getElementById('InputPassword_register').value);
+
+                xhr_register.onload = function () {
+                    var onLoadMessage = JSON.parse(xhr_register.responseText)
+                    console.log(onLoadMessage)
+                    if (onLoadMessage.result === "success") {
+
+                        location.href = ('https://127.0.0.1:3000/OnlineText/login');
+
+                    } else if (onLoadMessage.result === "fail") {
+
+                        console.log(document.getElementById('error').innerHTML)
+                        document.getElementById('error').innerHTML = onLoadMessage.data
+
+                    }
+
+                }
+
+                xhr_register.send();
+            }
+
+        }
+
         function register_check() {
-            const InputEmail_register = $('#InputEmail_register').val();
-            const InputPassword_register = $('#InputPassword_register').val();
-            const InputPassword_register_repeat = $('#InputPassword_register_repeat').val();
+            const InputEmail_register = document.getElementById('InputEmail_register').value
+            const InputPassword_register = document.getElementById('InputPassword_register').value
+            const InputPassword_register_repeat = document.getElementById('InputPassword_register_repeat').value
             if (InputEmail_register == '') {
-                document.getElementById('InputEmail_register_alert').innerHTML = "<span style='font-size:15px; color:red;'>電子信箱尚未填入</span>"
+                document.getElementById('error').innerHTML = "電子信箱尚未填入"
                 return false;
             }
             else if (InputPassword_register == '') {
-                document.getElementById('InputPassword_register_alert').innerHTML = "<span style='font-size:15px; color:red;'>密碼尚未填入</span>"
+                document.getElementById('error').innerHTML = "密碼尚未填入"
                 return false;
             }
             else if (InputPassword_register_repeat == '') {
-                document.getElementById('InputPassword_register_repeat_alert').innerHTML = "<span style='font-size:15px; color:red;'>請重複輸入密碼</span>"
+                document.getElementById('error').innerHTML = "請重複輸入密碼"
                 return false;
             }
             else if (InputPassword_register_repeat != InputPassword_register) {
-                document.getElementById('PasswordError_alert').innerHTML = "<span style='font-size:15px; color:red;'>兩次輸入的密碼不同</span>"
+                document.getElementById('error').innerHTML = "兩次輸入的密碼不同"
                 return false;
             }
             return true;

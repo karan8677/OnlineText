@@ -1,4 +1,6 @@
 import redis from 'redis'
+import fs from 'fs'
+import https from 'https'
 import config from './config/config'
 import app from './config/express'
 import jwtModule from './server/modules/jwt.module'
@@ -8,7 +10,14 @@ import SocketServer from 'ws'
 
 
 var clients = []
-const server = require('http').createServer(app);
+const SERVER_CONFIG = {
+    key: fs.readFileSync('key.pem'),
+
+
+    cert: fs.readFileSync('cert.pem')
+};
+
+const server = https.createServer(SERVER_CONFIG, app)
 const wss = new SocketServer.Server({
     server: server
     ,
@@ -75,7 +84,12 @@ wss.on('connection', ws => {
                         client.on('connect', () => {
                             console.log('Redis client connected');
                         });
-                        client.RPUSH(jsonData.data.roomName + "_message", JSON.stringify(jsonData.data));
+                        let jsonPackage = {}
+                        jsonPackage["UserAccount"] = jsonData.data.fromUserAccount
+                        jsonPackage["Message"] = jsonData.data.message
+
+
+                        client.RPUSH(jsonData.data.roomName + "_message", JSON.stringify(jsonPackage));
 
                         for (var x = 0; x < clients.length; x++) {
 
@@ -116,12 +130,9 @@ wss.on('connection', ws => {
 })
 
 server.listen(config.port, () => {
-    console.log(`server started on port http://127.0.
+    console.log(`server started on port https://127.0.
     0.1:${config.port} (${config.env})`)
 })
-// if (!module.parent) {
-
-// }
 
 export default
     { app, wss };

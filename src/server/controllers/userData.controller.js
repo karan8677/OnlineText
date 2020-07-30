@@ -7,7 +7,7 @@ const getRoom = (req, res) => {
 
         userDataModule.getUserID(jwtVerify_result._id).then((getUserID_result) => {
 
-            userDataModule.getUserRoom(getUserID_result).then((getUserRoom_result) => {
+            userDataModule.getUserRoom(getUserID_result.UserID).then((getUserRoom_result) => {
 
                     var jsonpackage = {}
                     jsonpackage["messageName"] = "userRoom"
@@ -33,13 +33,14 @@ const getRoom = (req, res) => {
     })
 
 }
+
 const getFriend = (req, res) => {
     const token = req.cookies.token;
     jwtModule.jwtVerify(token).then((jwtVerify_result) => {
 
-        userDataModule.getName(jwtVerify_result).then((getName_result) => {
+        userDataModule.getUserID(jwtVerify_result._id).then((getUserID_result) => {
 
-            userDataModule.getFriend(getName_result).then((getFriend_result) => {
+            userDataModule.getUserFriend(getUserID_result.UserID).then((getFriend_result) => {
 
                     var jsonpackage = {}
                     jsonpackage["messageName"] = "userFriend"
@@ -51,8 +52,6 @@ const getFriend = (req, res) => {
                 res.send(err)
 
             })
-
-            res.send(JSON.stringify())
 
         }).catch((err) => {
 
@@ -75,10 +74,10 @@ const getID = (req, res) => {
     jwtModule.jwtVerify(token).then((jwtVerify_result) => {
 
 
-        userDataModule.getUserName(jwtVerify_result).then((getUserName_result) => {
+        userDataModule.getUserID(jwtVerify_result._id).then((getUserName_result) => {
 
             var jsonpackage = {}
-            jsonpackage["messageName"] = "userAccount"
+            jsonpackage["messageName"] = "userID"
             jsonpackage["data"] = getUserName_result
             res.send(JSON.stringify(jsonpackage))
 

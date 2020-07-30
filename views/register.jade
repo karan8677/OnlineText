@@ -10,18 +10,18 @@ html(lang='zh-Hant-TW')
     script(src='https://kit.fontawesome.com/f46675eb01.js', crossorigin='anonymous')
     // whole background
     style(type='text/css').
-      html{
+      html {
       margin: 0;
       padding: 0;
       height: 100%;
       }
-      body{
+      body {
       background-image: url("/images/login_background.png");
       background-repeat: no-repeat;
       background-size: 1920px 1080px;
       height: 100%;
       }
-      .col-center-block{
+      .col-center-block {
       float: none;
       display: block;
       margin-left: auto;
@@ -31,10 +31,10 @@ html(lang='zh-Hant-TW')
       max-width: 500px;
       background-color: rgb(58, 58, 58);
       }
-      .edit{
+      .edit {
       margin-top: 5px;
       }
-      .textcolor{
+      .textcolor {
       color: white;
       }
   body
@@ -42,44 +42,57 @@ html(lang='zh-Hant-TW')
       .row.row-centerd
         .col-xs-6.col-md-4.col-center-block
           h1.textcolor 註冊頁面
-          form(action='register', method='POST', name='register_form', onsubmit='return register_check()')
-            .form-group
-              label.textcolor(for='InputEmail') 電子郵件
-              input#InputEmail_register.form-control(type='email', name='user_account', placeholder='請輸入您的信箱')
-            #InputEmail_register_alert
-            .form-group
-              label.textcolor(for='InputPassword') 密碼
-              input#InputPassword_register.form-control(type='password', name='user_password', placeholder='請設定您的密碼')
-            #InputPassword_register_alert
-            .form-group
-              label.textcolor(for='InputPassword_repeat') 重複輸入密碼
-              input#InputPassword_register_repeat.form-control(type='password', name='user_password_repet', placeholder='請重複輸入密碼')
-            #InputPassword_register_repeat_alert
-            #PasswordError_alert
-            div
-              button#register.btn.btn-default(type='submit', name='register') 註冊
+          .form-group
+            label.textcolor(for='InputEmail') 電子郵件
+            input#InputEmail_register.form-control(type='email', name='InputEmail_register', placeholder='請輸入您的信箱')
+          .form-group
+            label.textcolor(for='InputPassword') 密碼
+            input#InputPassword_register.form-control(type='password', name='InputPassword_register', placeholder='請設定您的密碼')
+          .form-group
+            label.textcolor(for='InputPassword_repeat') 重複輸入密碼
+            input#InputPassword_register_repeat.form-control(type='password', name='InputPassword_register_repeat', placeholder='請重複輸入密碼')
+          div
+            button#register.btn.btn-default(name='register') 註冊
+          label#error.textcolor
     script(src='/bootstrap-4.0.0-dist/js/jquery/dist/jquery.min.js')
     script(src='/bootstrap-4.0.0-dist/js/popper.js/dist/popper.min.js')
     script(src='/bootstrap-4.0.0-dist/js/bootstrap.min.js')
     script.
-      function register_check(){
-      const InputEmail_register = $('#InputEmail_register').val();
-      const InputPassword_register = $('#InputPassword_register').val();
-      const InputPassword_register_repeat = $('#InputPassword_register_repeat').val();
-      if(InputEmail_register == ''){
-      document.getElementById('InputEmail_register_alert').innerHTML="<span style='font-size:15px; color:red;'>電子信箱尚未填入</span>"
+      document.getElementById('register').onclick = function () {
+      if(register_check()){
+      var xhr_register = new XMLHttpRequest()
+      xhr_register.open("POST", "file/register/" + document.getElementById('InputEmail_register').value + "/" + document.getElementById('InputPassword_register').value);
+      xhr_register.onload = function () {
+      var onLoadMessage = JSON.parse(xhr_register.responseText)
+      console.log(onLoadMessage)
+      if (onLoadMessage.result === "success") {
+      location.href = ('https://127.0.0.1:3000/OnlineText/login');
+      } else if (onLoadMessage.result === "fail") {
+      console.log(document.getElementById('error').innerHTML)
+      document.getElementById('error').innerHTML = onLoadMessage.data
+      }
+      }
+      xhr_register.send();
+      }
+      }
+      function register_check() {
+      const InputEmail_register = document.getElementById('InputEmail_register').value
+      const InputPassword_register = document.getElementById('InputPassword_register').value
+      const InputPassword_register_repeat = document.getElementById('InputPassword_register_repeat').value
+      if (InputEmail_register == '') {
+      document.getElementById('error').innerHTML = "電子信箱尚未填入"
       return false;
       }
-      else if(InputPassword_register == ''){
-      document.getElementById('InputPassword_register_alert').innerHTML="<span style='font-size:15px; color:red;'>密碼尚未填入</span>"
+      else if (InputPassword_register == '') {
+      document.getElementById('error').innerHTML = "密碼尚未填入"
       return false;
       }
-      else if(InputPassword_register_repeat == ''){
-      document.getElementById('InputPassword_register_repeat_alert').innerHTML="<span style='font-size:15px; color:red;'>請重複輸入密碼</span>"
+      else if (InputPassword_register_repeat == '') {
+      document.getElementById('error').innerHTML = "請重複輸入密碼"
       return false;
       }
-      else if(InputPassword_register_repeat != InputPassword_register){
-      document.getElementById('PasswordError_alert').innerHTML="<span style='font-size:15px; color:red;'>兩次輸入的密碼不同</span>"
+      else if (InputPassword_register_repeat != InputPassword_register) {
+      document.getElementById('error').innerHTML = "兩次輸入的密碼不同"
       return false;
       }
       return true;

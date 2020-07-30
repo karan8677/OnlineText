@@ -83,11 +83,12 @@
 
 
     var xhr_room = new XMLHttpRequest()
+    var xhr_friend = new XMLHttpRequest()
     var xhr_userName = new XMLHttpRequest()
     var xhr_friendInvite = new XMLHttpRequest()
     var xhr_groupInvite = new XMLHttpRequest()
 
-    let ws = new WebSocket('ws://localhost:3000')
+    let ws = new WebSocket('wss://127.0.0.1:3000')
 
 
     xhr_room.open("GET", "file/room");
@@ -96,8 +97,16 @@
 
         var onLoadMessage = JSON.parse(xhr_room.responseText)
         console.log(onLoadMessage)
-        console.log(onLoadMessage.data.length)
         creadRoom(onLoadMessage.data)
+
+    };
+
+    xhr_friend.open("GET", "file/friend");
+
+    xhr_friend.onload = function () {
+
+        var onLoadMessage = JSON.parse(xhr_friend.responseText)
+        console.log(onLoadMessage)
 
     };
 
@@ -262,6 +271,7 @@
 
 
     ws.onopen = () => {
+        xhr_friend.send();
         xhr_groupInvite.send();
         xhr_friendInvite.send();
         xhr_userName.send();

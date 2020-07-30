@@ -9,7 +9,7 @@ const connectionPool = mysql.createPool({
     database: config.mysqlDatabase
 })
 
-const creatChatRoom = (insertValues) => {
+const creatChatRoom = (roomName, ownID) => {
 
     return new Promise((resolve, reject) => {
 
@@ -22,10 +22,10 @@ const creatChatRoom = (insertValues) => {
             } else {
 
                 var sqlCommand = "INSERT INTO ChatRoom(RoomName, Time, MemberNum, OwnID) VALUES('" +
-                    insertValues.roomName + "','" +
+                    roomName + "','" +
                     "98-09-04" + "','" +
-                    insertValues.memberNum + "','" +
-                    insertValues.ownID + "')"
+                    1 + "','" +
+                    ownID + "')"
 
                 connection.query(sqlCommand, function (err, result) {
 
@@ -49,7 +49,7 @@ const creatChatRoom = (insertValues) => {
     })
 }
 
-const getRoomID = (insertValues) => {
+const getRoomID = (roomName) => {
 
     return new Promise((resolve, reject) => {
 
@@ -61,7 +61,7 @@ const getRoomID = (insertValues) => {
 
             } else {
                 var sqlCommand = "SELECT RoomID FROM ChatRoom WHERE RoomName = '" +
-                    insertValues.roomName +
+                    roomName +
                     "'"
 
                 connection.query(sqlCommand, function (err, result) {
@@ -83,7 +83,7 @@ const getRoomID = (insertValues) => {
     })
 }
 
-const getRoomMember = (insertValues) => {
+const getRoomMember = (roomName) => {
 
     return new Promise((resolve, reject) => {
 
@@ -101,7 +101,7 @@ const getRoomMember = (insertValues) => {
                     "ON chatroom.RoomID = member.RoomID " +
 
                     "WHERE chatroom.RoomName = '" +
-                    insertValues +
+                    roomName +
                     "'"
 
                 connection.query(sqlCommand, function (err, result) {

@@ -2,10 +2,10 @@ import messageModule from '../modules/message.module'
 import chatRoomModule from '../modules/chatRoom.module'
 import redis from 'redis'
 
-const getMember = (data) => {
+const getMember = (roomName) => {
     return new Promise((resolve, reject) => {
 
-        chatRoomModule.getRoomMember(data).then((getRoomMember_result) => {
+        chatRoomModule.getRoomMember(roomName).then((getRoomMember_result) => {
 
             resolve(getRoomMember_result)
 
@@ -22,10 +22,10 @@ var saveMessage = (data) => {
 
     return new Promise((resolve, reject) => {
 
-        chatRoomModule.getRoomID(data).then((getRoomID_result) => {
+        chatRoomModule.getRoomID(data.roomName).then((getRoomID_result) => {
 
             data.roomID = getRoomID_result.RoomID
-            messageModule.saveMessage(data).then((saveMessage_result) => {
+            messageModule.saveMessage(data.roomID, data.fromUserID, data.message).then((saveMessage_result) => {
 
                 resolve(saveMessage_result)
 
@@ -44,7 +44,7 @@ var saveMessage = (data) => {
     })
 }
 
-const getOldMessage = (data) => {
+const getOldMessage = (roomName) => {
     return new Promise((resolve, reject) => {
 
         const client = redis.createClient();
@@ -54,7 +54,7 @@ const getOldMessage = (data) => {
 
         });
 
-        client.LRANGE(data + "_message", 0, 50, (err, result) => {
+        client.LRANGE(roomName + "_message", 0, 50, (err, result) => {
 
             if (result.length != 0) {
                 var jsonpackage = {}
@@ -66,14 +66,14 @@ const getOldMessage = (data) => {
                 resolve(jsonpackage)
 
             } else {
-                messageModule.getChatPreloadMessage(data).then((getChatPreloadMessage_result) => {
+                messageModule.getChatPreloadMessage(roomName).then((getChatPreloadMessage_result) => {
 
                     var jsonpackage = {}
                     jsonpackage["messageName"] = "getOldMessage"
                     jsonpackage["data"] = getChatPreloadMessage_result
 
                     for (var x = 0; x < jsonpackage.data.length; x++) {
-                        client.RPUSH(data + "_message", JSON.stringify(jsonpackage.data[x]));
+                        client.RPUSH(roomName + "_message", JSON.stringify(jsonpackage.data[x]));
                     }
                     resolve(jsonpackage)
 

@@ -9,7 +9,7 @@ const connectionPool = mysql.createPool({
     database: config.mysqlDatabase
 })
 
-const saveMessage = (insertValues) => {
+const saveMessage = (roomID, fromUserID, message) => {
 
     return new Promise((resolve, reject) => {
 
@@ -26,10 +26,10 @@ const saveMessage = (insertValues) => {
                 var dateTime = date + ' ' + time;
 
                 var sqlCommand = "INSERT INTO Message(RoomID, FromUserID, Time, Message) VALUES('" +
-                    insertValues.roomID + "','" +
-                    insertValues.fromUserID + "','" +
+                    roomID + "','" +
+                    fromUserID + "','" +
                     dateTime + "','" +
-                    insertValues.message + "')"
+                    message + "')"
 
 
                 connection.query(sqlCommand, function (err, result) {
@@ -54,7 +54,7 @@ const saveMessage = (insertValues) => {
     })
 }
 
-const getChatPreloadMessage = (insertValues) => {
+const getChatPreloadMessage = (roomName) => {
 
     return new Promise((resolve, reject) => {
 
@@ -71,7 +71,7 @@ const getChatPreloadMessage = (insertValues) => {
                     "ON account.UserID = message.FromUserID " +
 
                     "WHERE chatroom.RoomName = " +
-                    insertValues +
+                    roomName +
 
                     " ORDER BY message.MessageID " +
                     "limit 50";

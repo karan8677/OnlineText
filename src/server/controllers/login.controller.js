@@ -1,31 +1,37 @@
-import accountModule from '../modules/login.module'
+import loginModule from '../modules/login.module'
 import jwtModule from '../modules/jwt.module'
 
-const loginPost = (req, res) => {
+const login = (req, res) => {
 
-    const insertValues = req.body
+    loginModule.checkAccount(req.params.userAccount, req.params.userPassword).then((checkAccount_result) => {
 
-    accountModule.checkAccount(insertValues).then((checkAccount_result) => {
+        if (checkAccount_result === "success"){
 
-        jwtModule.jwtSetCookie(insertValues.user_account, res).then((jwtSetCookie_result) => {
+            jwtModule.jwtSetCookie(req.params.userAccount, res).then((jwtSetCookie_result) => {
 
-            if (jwtSetCookie_result === "CookieSet") {
+                if (jwtSetCookie_result === "CookieSet") {
 
-                res.redirect('mainPage');
+                    var jsonpackage = {}
+                    jsonpackage["result"] = "success"
+                    res.send(JSON.stringify(jsonpackage))
 
-            } else {
+                }
+                
+            }).catch((err) => {
 
-                res.render("Login", {
-                    success: false
-                })
+                res.send(err)
 
-            }
+            })
 
-        }).catch((err) => {
+        }else{
 
-            res.send(err)
+            var jsonpackage = {}
+            jsonpackage["result"] = "fail"
+            jsonpackage["data"] = checkAccount_result
+            res.send(JSON.stringify(jsonpackage))
 
-        })
+        }
+        
 
     }).catch((err) => {
 
@@ -35,5 +41,5 @@ const loginPost = (req, res) => {
 
 }
 export default {
-    loginPost
+    login
 }

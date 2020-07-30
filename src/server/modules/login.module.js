@@ -9,7 +9,7 @@ const connectionPool = mysql.createPool({
     database: config.mysqlDatabase
 })
 
-const checkAccount = (insertValues) => {
+const checkAccount = (userAccount, userPassword) => {
 
     return new Promise((resolve, reject) => {
 
@@ -21,7 +21,7 @@ const checkAccount = (insertValues) => {
 
             } else {
 
-                var sqlCommand = "Select UserPassword From account Where UserAccount = '" + insertValues.user_account + "'"
+                var sqlCommand = "Select UserPassword From account Where UserAccount = '" + userAccount + "'"
 
                 connection.query(sqlCommand, function(err, result){
 
@@ -32,16 +32,15 @@ const checkAccount = (insertValues) => {
                         
                     } else if (result.length == 0) {
 
-                        reject("Account no found")
+                        resolve("Account not found")
 
-                    } else if (result[0].UserPassword === insertValues.user_password) {
+                    } else if (result[0].UserPassword === userPassword) {
 
-                        resolve(result);
+                        resolve("success")
 
                     } else {
 
-                        console.error('SQL error:', err)
-                        reject(err)
+                        resolve("Password incorrect")
                         
                     }
 

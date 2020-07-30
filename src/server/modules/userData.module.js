@@ -9,7 +9,7 @@ const connectionPool = mysql.createPool({
     database: config.mysqlDatabase
 })
 
-const getUserRoom = (insertValues) => {
+const getUserRoom = (userID) => {
 
     return new Promise((resolve, reject) => {
 
@@ -25,12 +25,14 @@ const getUserRoom = (insertValues) => {
                     "INNER JOIN chatroom " +
                     "ON chatroom.RoomID = member.RoomID " +
                     "WHERE member.UserID = " +
-                    insertValues.UserID
+                    userID
 
                 connection.query(sqlCommand, function (err, result) {
                     if (err) {
+
                         console.error('SQL error:', err)
                         reject(err)
+
                     } else {
 
                         resolve(result);
@@ -46,7 +48,7 @@ const getUserRoom = (insertValues) => {
     })
 }
 
-const getUserFriend = (insertValues) => {
+const getUserFriend = (UserID) => {
 
     return new Promise((resolve, reject) => {
 
@@ -58,19 +60,19 @@ const getUserFriend = (insertValues) => {
 
             } else {
 
-                var sqlCommand = "SELECT Friend.UserID1 " +
+                var sqlCommand = "SELECT Account.UserAccount " +
                     "FROM Account " +
                     "INNER JOIN Friend " +
                     "ON Friend.UserID2 = Account.UserID " +
-                    "WHERE member.UserID2 = " +
-                    insertValues.UserID +
+                    "WHERE Friend.UserID1 = " +
+                    UserID +
 
-                    " UNION SELECT Friend.UserID2 " +
+                    " UNION SELECT Account.UserAccount " +
                     "FROM Account " +
                     "INNER JOIN Friend " +
                     "ON Friend.UserID1 = Account.UserID " +
-                    "WHERE member.UserID1 = " +
-                    insertValues.UserID +
+                    "WHERE Friend.UserID2 = " +
+                    UserID 
 
                     connection.query(sqlCommand, function (err, result) {
 
@@ -93,8 +95,7 @@ const getUserFriend = (insertValues) => {
     })
 }
 
-
-const getUserID = (insertValues) => {
+const getUserID = (UserAccount) => {
 
     return new Promise((resolve, reject) => {
 
@@ -106,7 +107,7 @@ const getUserID = (insertValues) => {
 
             } else {
 
-                var sqlCommand = "SELECT UserID FROM Account WHERE UserAccount = '" + insertValues + "'"
+                var sqlCommand = "SELECT UserID FROM Account WHERE UserAccount = '" + UserAccount + "'"
                 connection.query(sqlCommand, function (err, result) {
                     var resultPackage = {}
                     if (err) {

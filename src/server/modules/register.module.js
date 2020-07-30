@@ -9,7 +9,7 @@ const connectionPool = mysql.createPool({
     database: config.mysqlDatabase
 })
 
-const createAccount = (insertValues) => {
+const createAccount = (userAccount, userPassword) => {
 
     return new Promise((resolve, reject) => {
 
@@ -22,8 +22,8 @@ const createAccount = (insertValues) => {
             } else {
 
                 var sqlCommand = "INSERT INTO Account(UserAccount, UserPassword) VALUES('" +
-                    insertValues.user_account + "','" +
-                    insertValues.user_password + "')"
+                    userAccount + "','" +
+                    userPassword + "')"
                
                 connection.query(sqlCommand, function(err, result){
 

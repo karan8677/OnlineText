@@ -1,11 +1,34 @@
-import accountModule from '../modules/register.module'
+import registerModule from '../modules/register.module'
+import loginModule from '../modules/login.module'
 
-const registerPost = (req, res) => {
-    const insertValues = req.body
+const register = (req, res) => {
 
-    accountModule.createAccount(insertValues).then((createAccount_result) => {
+    loginModule.checkAccount(req.params.userAccount, req.params.userPassword).then((checkAccount_result) => {
+        console.log(checkAccount_result)
+        if (checkAccount_result === "Account not found"){
 
-        res.redirect('verification')
+            registerModule.createAccount(req.params.userAccount, req.params.userPassword).then((createAccount_result) => {
+
+                var jsonpackage = {}
+                jsonpackage["result"] = "success"
+                res.send(JSON.stringify(jsonpackage))
+
+            }).catch((err) => {
+
+                res.send(err)
+
+            })
+
+        } else if (checkAccount_result === "success" || checkAccount_result === "Password incorrect"){
+
+            var jsonpackage = {}
+            jsonpackage["result"] = "fail"
+            jsonpackage["data"] = "Account exist"
+            res.send(JSON.stringify(jsonpackage))
+
+        }
+        console.log("sssss")
+
 
     }).catch((err) => {
 
@@ -16,5 +39,5 @@ const registerPost = (req, res) => {
 }
 
 export default {
-    registerPost
+    register
 }

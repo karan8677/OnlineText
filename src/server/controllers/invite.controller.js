@@ -161,7 +161,7 @@ const deleteGroupInvite = (req, res) => {
 
         userDataModule.getUserID(jwtVerify_result._id).then((getUserID_result) => {
 
-            chatRoomModule.getRoomID(req.params).then((getRoomID_result) => {
+            chatRoomModule.getRoomID(req.params.roomName).then((getRoomID_result) => {
 
                 inviteModule.deleteGroupInvite(getUserID_result.UserID, getRoomID_result).then((deleteGroupInvite_result) => {
 
@@ -199,7 +199,7 @@ const postGroupInvite = (req, res) => {
 
         userDataModule.getUserID(jwtVerify_result._id).then((getUserID_result) => {
 
-            chatRoomModule.getRoomID(req.params).then((getRoomID_result) => {
+            chatRoomModule.getRoomID(req.params.roomName).then((getRoomID_result) => {
 
                 inviteModule.postGroupInvite(getUserID_result.UserID, getRoomID_result).then((postGroupInvite_result) => {
 
