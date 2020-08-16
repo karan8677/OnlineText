@@ -66,10 +66,12 @@ html(lang='zh-Hant-TW')
       xhr_login.onload = function () {
       var onLoadMessage = JSON.parse(xhr_login.responseText)
       console.log(onLoadMessage)
-      if(onLoadMessage.result === "success"){
+      if (onLoadMessage.messageName === "login") {
+      if (onLoadMessage.data === "success") {
       location.href = ('https://127.0.0.1:3000/OnlineText/mainPage');
-      }else if(onLoadMessage.result === "fail"){
+      } else{
       document.getElementById('error').innerHTML = onLoadMessage.data
+      }
       }
       }
       xhr_login.send();

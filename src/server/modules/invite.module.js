@@ -1,52 +1,29 @@
-import mysql from 'mysql'
-import config from '../../config/config'
+import mysql from './mysql.module'
+import userDataModule from './userData.module'
+import groupModule from './group.module'
 
-const connectionPool = mysql.createPool({
-    connection: 10,
-    host: config.mysqlHost,
-    user: config.mysqlUserName,
-    password: config.mysqlPass,
-    database: config.mysqlDatabase
-})
+
 
 const getFriendInvite = (toUserID) => {
 
     return new Promise((resolve, reject) => {
 
-        connectionPool.getConnection((connectionError, connection) => {
-
-            if (connectionError) {
-
-                reject(connectionError)
-
-            } else {
-
-                var sqlCommand = "SELECT Account.UserAccount " +
+        var sqlCommand = "SELECT Account.UserAccount ,Account.UserID " +
                     "FROM Account " +
 
-                    "INNER JOIN friendInvite " +
-                    "ON friendInvite.fromUserID = Account.userID " +
+                    "INNER JOIN FriendInvite " +
+                    "ON FriendInvite.FromUserID = Account.UserID " +
 
-                    "WHERE friendInvite.toUserID =" +
+                    "WHERE FriendInvite.ToUserID =" +
                     toUserID 
 
-                connection.query(sqlCommand, function (err, result) {
-
-                    if (err) {
-
-                        console.error('SQL error:', err)
-                        reject(err)
-
-                    } else {
-
-                        resolve(result);
-                    }
-
-                })
-
-                connection.release()
-
-            }
+        mysql.mysqlCommand(sqlCommand)
+        .then(result => {
+            resolve(result)
+        })
+        .catch(err => {
+            console.error('SQL error:', err)
+            reject(err)
         })
 
     })
@@ -57,35 +34,17 @@ const deleteFriendInvite = (toUserID, fromUserID)=>{
     
     return new Promise((resolve, reject) => {
 
-        connectionPool.getConnection((connectionError, connection) => {
+        var sqlCommand = "DELETE FROM FriendInvite " + 
+        "WHERE ToUserID = " + toUserID + " AND " +
+        "FromUserID = " + fromUserID 
 
-            if (connectionError) {
-
-                reject(connectionError)
-
-            } else {
-
-                var sqlCommand = "DELETE FROM friendInvite " + 
-                "WHERE toUserID = " + toUserID + " AND ";
-                "WHERE fromUserID = " + fromUserID 
-
-                connection.query(sqlCommand, function (err, result) {
-
-                    if (err) {
-
-                        console.error('SQL error:', err)
-                        reject(err)
-
-                    } else {
-
-                        resolve(result);
-                    }
-                    
-                })
-
-                connection.release()
-
-            }
+        mysql.mysqlCommand(sqlCommand)
+        .then(result => {
+            resolve(result)
+        })
+        .catch(err => {
+            console.error('SQL error:', err)
+            reject(err)
         })
 
     })
@@ -95,81 +54,105 @@ const deleteFriendInvite = (toUserID, fromUserID)=>{
 const postFriendInvite = (toUserID, fromUserID)=>{
     
     return new Promise((resolve, reject) => {
+        userDataModule.getCertainFriend(toUserID, fromUserID).then(result => {
 
-        connectionPool.getConnection((connectionError, connection) => {
+            if(result.length === 0){
 
-            if (connectionError) {
+                return getCertainFriendInvite(toUserID, fromUserID)
 
-                reject(connectionError)
+            }else{
 
-            } else {
-
-                var sqlCommand = "INSERT INTO friendInvite(toUserID, fromUserID) VALUES('" +
-                    toUserID + "','" +
-                    fromUserID + "')"
-
-
-                connection.query(sqlCommand, function (err, result) {
-
-                    if (err) {
-
-                        console.error('SQL error:', err)
-                        reject(err)
-
-                    } else {
-
-                        resolve(result);
-                    }
-                    
-                })
-
-                connection.release()
+                reject("already friend")
+                return Promise.reject(0)
 
             }
+
+        })
+        .then(result => {
+
+            if (result.length === 0) {
+
+                var sqlCommand = "INSERT INTO FriendInvite(ToUserID, FromUserID) VALUES('" +
+                    toUserID + "','" +
+                    fromUserID + "') "
+
+                return mysql.mysqlCommand(sqlCommand)
+
+            }else{
+
+                reject("already invite")
+                return Promise.reject(0)
+            }
+
+        })
+        .then(result => {
+
+            resolve(result)
+
+        })
+        .catch(err => {
+
+            if(err !== 0){
+                console.error('SQL error:', err)
+                reject(err)
+            }
+
         })
 
     })
     
 }
 
-const getGroupInvite = (userID) => {
+const getCertainFriendInvite = (toUserID, fromUserID) => {
 
     return new Promise((resolve, reject) => {
 
-        connectionPool.getConnection((connectionError, connection) => {
+        var sqlCommand = "SELECT FriendInviteID FROM FriendInvite " +
+            "WHERE" +
+            " ToUserID = " + toUserID + " AND" +
+            " FromUserID = " + fromUserID + " OR(" +
+            " ToUserID = " + fromUserID + " AND" +
+            " FromUserID = " + toUserID + ")"
 
-            if (connectionError) {
+        mysql.mysqlCommand(sqlCommand)
+            .then(result => {
+                resolve(result)
+            })
+            .catch(err => {
+                console.error('SQL error:', err)
+                reject(err)
+            })
 
-                reject(connectionError)
+    })
 
-            } else {
+}
 
-                var sqlCommand = "SELECT ChatRoom.RoomName " +
-                    "FROM ChatRoom " +
 
-                    "INNER JOIN groupInvite " +
-                    "ON groupInvite.groupID = ChatRoom.RoomID " +
 
-                    "WHERE groupInvite.userID =" +
-                    userID 
 
-                connection.query(sqlCommand, function (err, result) {
 
-                    if (err) {
 
-                        console.error('SQL error:', err)
-                        reject(err)
 
-                    } else {
 
-                        resolve(result);
-                    }
 
-                })
+const getGroupInvite = (userID) => {
 
-                connection.release()
+    return new Promise((resolve, reject) => {
+        var sqlCommand = "SELECT GroupList.GroupName, GroupList.GroupID " +
+            "FROM GroupList " +
 
-            }
+            "INNER JOIN GroupInvite " +
+            "ON GroupInvite.GroupID = GroupList.GroupID " +
+
+            "WHERE GroupInvite.UserID = " +
+            userID 
+        mysql.mysqlCommand(sqlCommand)
+        .then(result => {
+            resolve(result)
+        })
+        .catch(err => {
+            console.error('SQL error:', err)
+            reject(err)
         })
 
     })
@@ -180,35 +163,17 @@ const deleteGroupInvite = (userID, groupID)=>{
     
     return new Promise((resolve, reject) => {
 
-        connectionPool.getConnection((connectionError, connection) => {
+        var sqlCommand = "DELETE FROM GroupInvite " + 
+        "WHERE UserID = " + userID + " AND " +
+        "GroupID = " + groupID 
 
-            if (connectionError) {
-
-                reject(connectionError)
-
-            } else {
-
-                var sqlCommand = "DELETE FROM groupInvite " + 
-                "WHERE userID = " + userID + " AND ";
-                "WHERE groupID = " + groupID 
-
-                connection.query(sqlCommand, function (err, result) {
-
-                    if (err) {
-
-                        console.error('SQL error:', err)
-                        reject(err)
-
-                    } else {
-
-                        resolve(result);
-                    }
-                    
-                })
-
-                connection.release()
-
-            }
+        mysql.mysqlCommand(sqlCommand)
+        .then(result => {
+            resolve(result)
+        })
+        .catch(err => {
+            console.error('SQL error:', err)
+            reject(err)
         })
 
     })
@@ -219,47 +184,84 @@ const postGroupInvite = (userID, groupID)=>{
     
     return new Promise((resolve, reject) => {
 
-        connectionPool.getConnection((connectionError, connection) => {
+        groupModule.getCertainMember(userID, groupID).then(result => {
 
-            if (connectionError) {
+            if (result.length === 0) {
 
-                reject(connectionError)
+                return getCertainGroupInvite(userID, groupID)
 
             } else {
 
-                var sqlCommand = "INSERT INTO groupInvite(userID, groupID) VALUES('" +
-                    userID + "','" +
-                    groupID + "')"
-
-
-                connection.query(sqlCommand, function (err, result) {
-
-                    if (err) {
-
-                        console.error('SQL error:', err)
-                        reject(err)
-
-                    } else {
-
-                        resolve(result);
-                    }
-                    
-                })
-
-                connection.release()
+                reject("already member")
+                return Promise.reject(0)
 
             }
-        })
 
+        })
+        .then(result => {
+
+            if (result.length === 0) {
+
+                var sqlCommand = "INSERT INTO GroupInvite(UserID, GroupID) VALUES('" +
+                    userID + "','" +
+                    groupID + "') "
+
+                return mysql.mysqlCommand(sqlCommand)
+
+            } else {
+
+                reject("already invite")
+                return Promise.reject(0)
+            }
+
+        })
+        .then(result => {
+
+            resolve(result)
+
+        })
+        .catch(err => {
+
+            if (err !== 0) {
+                console.error('SQL error:', err)
+                reject(err)
+            }
+
+        })
     })
     
 }
 
+const getCertainGroupInvite = (userID, groupID) => {
+
+    return new Promise((resolve, reject) => {
+
+        var sqlCommand = "SELECT GroupInviteID FROM GroupInvite " +
+            "WHERE" +
+            " UserID = " + userID + " AND" +
+            " GroupID = " + groupID 
+
+        mysql.mysqlCommand(sqlCommand)
+            .then(result => {
+                resolve(result)
+            })
+            .catch(err => {
+                console.error('SQL error:', err)
+                reject(err)
+            })
+
+    })
+
+}
 export default{
     getFriendInvite,
     deleteFriendInvite,
     postFriendInvite,
+    getCertainFriendInvite,
+
+
     getGroupInvite,
     deleteGroupInvite,
-    postGroupInvite
+    postGroupInvite,
+    getCertainGroupInvite
 }

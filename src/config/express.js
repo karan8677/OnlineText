@@ -23,15 +23,15 @@ app.upload = function (req, res) {
     console.log(req.body)
 };
 
-app.get('/', (req, res) => {
-    res.send(`server started express on  port http://127.0.0.1:${config.port} (${config.env})`)
-})
+// app.get('/', (req, res) => {
+//     res.render('welcome')
+// })
 app.use('/OnlineText', index)
 
 app.use(express.static(path.join('C:/OnlineText/', 'public')));
 
 app.use(function (req, res) {
-    res.status(404).render('404page')
+    res.status(404).render('404Page')
 })
 
 export default app

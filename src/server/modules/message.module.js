@@ -1,60 +1,33 @@
-import mysql from 'mysql'
-import config from '../../config/config'
+import mysql from './mysql.module'
 
-const connectionPool = mysql.createPool({
-    connection: 10,
-    host: config.mysqlHost,
-    user: config.mysqlUserName,
-    password: config.mysqlPass,
-    database: config.mysqlDatabase
-})
-
-const saveMessage = (roomID, fromUserID, message) => {
+const saveGroupMessage = (groupID, fromUserID, message) => {
 
     return new Promise((resolve, reject) => {
 
-        connectionPool.getConnection((connectionError, connection) => {
+        var today = new Date();
+        var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        var dateTime = date + ' ' + time;
 
-            if (connectionError) {
+        var sqlCommand = "INSERT INTO GroupMessage(GroupID, FromUserID, Message, Time) VALUES('" +
+            groupID + "','" +
+            fromUserID + "','" +
+            message  + "','" +
+            dateTime+ "')"
 
-                reject(connectionError)
-
-            } else {
-                var today = new Date();
-                var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-                var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-                var dateTime = date + ' ' + time;
-
-                var sqlCommand = "INSERT INTO Message(RoomID, FromUserID, Time, Message) VALUES('" +
-                    roomID + "','" +
-                    fromUserID + "','" +
-                    dateTime + "','" +
-                    message + "')"
-
-
-                connection.query(sqlCommand, function (err, result) {
-
-
-                    if (err) {
-
-                        console.error('SQL error:', err)
-                        reject(err)
-
-                    } else {
-
-                        resolve(result);
-                    }
-                })
-                resolve(0);
-                connection.release()
-
-            }
+        mysql.mysqlCommand(sqlCommand)
+        .then(result => {
+            resolve(result)
         })
-
+        .catch(err => {
+            console.error('SQL error:', err)
+            reject(err)
+        })
+    
     })
 }
 
-const getChatPreloadMessage = (roomName) => {
+const getGroupPreloadMessage = (groupID) => {
 
     return new Promise((resolve, reject) => {
 
@@ -62,18 +35,16 @@ const getChatPreloadMessage = (roomName) => {
             if (connectionError) {
                 reject(connectionError)
             } else {
-                var sqlCommand = "SELECT account.UserAccount, Message.Message " +
-                    "FROM chatroom " +
-                    "INNER JOIN message " +
-                    "ON chatroom.RoomID = message.RoomID " +
+                var sqlCommand = "SELECT Account.UserAccount, GroupMessage.Message, GroupMessage.Time " +
+                    "FROM GroupMessage " +
 
-                    "INNER JOIN account " +
-                    "ON account.UserID = message.FromUserID " +
+                    "INNER JOIN Account " +
+                    "ON Account.UserID = GroupMessage.FromUserID " +
 
-                    "WHERE chatroom.RoomName = " +
-                    roomName +
+                    "WHERE GroupMessage.GroupID = " +
+                    groupID +
 
-                    " ORDER BY message.MessageID " +
+                    " ORDER BY GroupMessage.MessageID " +
                     "limit 50";
 
                 connection.query(sqlCommand, function (err, result) {
@@ -84,7 +55,6 @@ const getChatPreloadMessage = (roomName) => {
                         reject(err)
 
                     } else {
-
                         resolve(result);
 
                     }
@@ -94,40 +64,75 @@ const getChatPreloadMessage = (roomName) => {
         })
 
     })
+}
 
-    // return new Promise((resolve, reject) => {
+const saveFriendMessage = (friendID, fromUserID, message) => {
 
-    //     connectionPool.getConnection((connectionError, connection) => {
-    //         if (connectionError) {
-    //             reject(connectionError)
-    //         } else {
-    //             var sqlCommand = "SELECT TOP" +
-    //                 insertValues.limit +
-    //                 " * From Message Where RoomID = " +
-    //                 insertValues.roomID +
-    //                 "DESC"
+    return new Promise((resolve, reject) => {
 
-    //             connection.query(sqlCommand, function (err, result){
+        var today = new Date();
+        var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        var dateTime = date + ' ' + time;
 
-    //                 if (err) {
-    //                     console.error('SQL error:', err)
-    //                     resultPackage["success"] = "fail"
-    //                     resolve(resultPackage);
-    //                     // reject(error)
-    //                 } else {
-    //                     resultPackage["success"] = "success"
-    //                     resultPackage["result"] = result
-    //                     resolve(resultPackage);
-    //                 }
-    //             })
-    //             connection.release()
-    //         }
-    //     })
+        var sqlCommand = "INSERT INTO FriendMessage(FriendID, FromUserID, Message, Time) VALUES('" +
+            friendID + "','" +
+            fromUserID + "','" +
+            message + "','" +
+            dateTime + "')"
 
-    // })
+        mysql.mysqlCommand(sqlCommand)
+        .then(result => {
+            resolve(result)
+        })
+        .catch(err => {
+            console.error('SQL error:', err)
+            reject(err)
+        })
+
+    })
+}
+
+const getFriendPreloadMessage = (friendID) => {
+
+    return new Promise((resolve, reject) => {
+
+        connectionPool.getConnection((connectionError, connection) => {
+            if (connectionError) {
+                reject(connectionError)
+            } else {
+                var sqlCommand = "SELECT Account.UserAccount, FriendMessage.Message, FriendMessage.Time " +
+                    "FROM FriendMessage " +
+                    "INNER JOIN Account  " +
+                    "ON FriendMessage.FromUserID = Account.UserID " +
+                    "WHERE FriendMessage.FriendID = " +
+                    friendID +
+
+                    " ORDER BY FriendMessage.MessageID " +
+                    "limit 50";
+
+                connection.query(sqlCommand, function (err, result) {
+
+                    if (err) {
+
+                        console.error('SQL error:', err)
+                        reject(err)
+
+                    } else {
+                        resolve(result);
+
+                    }
+                })
+                connection.release()
+            }
+        })
+
+    })
 }
 
 export default {
-    saveMessage,
-    getChatPreloadMessage
+    saveGroupMessage,
+    getGroupPreloadMessage,
+    saveFriendMessage,
+    getFriendPreloadMessage
 }

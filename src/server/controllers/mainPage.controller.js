@@ -5,34 +5,15 @@ const mainPageGet = (req, res) => {
     const token = req.cookies.token;
     jwtModule.jwtVerify(token).then((jwtVerify_result) => {
 
-        res.render('RoomInput')
+        res.render('TestPage')
 
     }).catch((err) => {
-
-        res.send(err)
-
+        res.redirect('https://127.0.0.1:3000/OnlineText/login');
+        // res.send(err)
     })
 }
 
-const mainPagePost = (req, res) => {
-
-    const token = req.cookies.token;
-
-    jwtModule.jwtVerify(token).then((jwtVerify_result) => {
-
-        const RoomID = req.body.RoomID
-        res.render('GroupChat', {
-            RoomID: RoomID
-        })
-
-    }).catch((error) => {
-
-        res.send(error)
-
-    })
-}
 
 export default {
-    mainPageGet,
-    mainPagePost
+    mainPageGet
 }

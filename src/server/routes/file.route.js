@@ -1,15 +1,20 @@
 import express from 'express'
-import chatMessageCtrl from '../controllers/chatMessage.controller'
+import groupCtrl from '../controllers/group.controller'
 import inviteCtrl from '../controllers/invite.controller'
 import userDataCtrl from '../controllers/userData.controller'
 import loginCtrl from '../controllers/login.controller'
 import registerCtrl from '../controllers/register.controller'
+import imgmodules from '../modules/image.module'
+import message from '../controllers/message.controller'
+import fs from 'fs'
 
+
+const multer = require('multer')
 
 const router = express.Router()
-// login & register
-router.get('/login/:userAccount/:userPassword', function (req, res) {
 
+// ===========================================            login and reagister             =============================================
+router.get('/login/:userAccount/:userPassword', function (req, res) {
     loginCtrl.login(req, res)
 
 })
@@ -20,72 +25,155 @@ router.post('/register/:userAccount/:userPassword', function (req, res) {
 
 })
 
-router.get('/userName', function (req, res) {
-    userDataCtrl.getName(req, res)
-})
 
 
-// group
-// router.post('/room/:roomName', function (req, res) {
-//     inviteCtrl.addGroup(req, res)
-// })
-router.get('/room', function (req, res) {
-    userDataCtrl.getRoom(req, res)
-})
 
 
-// friend
-// router.post('/friend/:userName', function (req, res) {
-//     inviteCtrl.addFriend(req, res)
-// })
+// ===========================================            user data              =============================================
+router.get('/userData', function (req, res) {
 
-router.get('/friend', function (req, res) {
-    userDataCtrl.getFriend(req, res)
+	userDataCtrl.getUserData(req, res)
+
 })
 
 
 
-// groupInvite
+
+
+// ===========================================            group               =============================================
+router.post('/createGroup/:groupName', function (req, res) {
+
+	groupCtrl.cresteGroup(req, res)
+
+})
+router.delete('/deleteGroup/:groupID', function (req, res) {
+
+	groupCtrl.deleteGroup(req, res)
+
+})
+router.get('/group', function (req, res) {
+
+	userDataCtrl.getGroup(req, res)
+
+})
+router.post('/group/:groupID', function (req, res) {
+
+	userDataCtrl.addGroup(req, res)
+
+})
+router.delete('/group/:groupID', function (req, res) {
+
+	userDataCtrl.deleteGroup(req, res)
+
+})
 router.get('/groupInvite', function (req, res) {
-    inviteCtrl.getGroupInvite(req, res)
+
+	inviteCtrl.getGroupInvite(req, res)
+
 })
-router.post('/groupInvite/:userName/:roomName', function (req, res) {
-    inviteCtrl.postFriendInvite(req, res)
+router.post('/groupInvite/:userName/:groupID', function (req, res) {
+
+	inviteCtrl.postGroupInvite(req, res)
+
+})
+router.delete('/groupInvite/:groupID', function (req, res) {
+
+	inviteCtrl.deleteGroupInvite(req, res)
+
 })
 
-router.delete('/groupInvite/:roomName', function (req, res) {
-    inviteCtrl.deleteFriendInvite(req, res)
+
+
+
+// ===========================================            friend               =============================================
+router.get('/friend', function (req, res) {
+
+	userDataCtrl.getFriend(req, res)
+
 })
+router.post('/friend/:userID', function (req, res) {
 
+	userDataCtrl.addFriend(req, res)
 
-// friendInvite
+})
+router.delete('/friend/:userID', function (req, res) {
+
+	userDataCtrl.deleteFriend(req, res)
+
+})
 router.get('/friendInvite', function (req, res) {
-    inviteCtrl.getFriendInvite(req, res)
-})
 
+	inviteCtrl.getFriendInvite(req, res)
+
+})
 router.post('/friendInvite/:userName', function (req, res) {
-    inviteCtrl.postFriendInvite(req, res)
+
+	inviteCtrl.postFriendInvite(req, res)
+
+})
+router.delete('/friendInvite/:userID', function (req, res) {
+
+	inviteCtrl.deleteFriendInvite(req, res)
+
 })
 
-router.delete('/friendInvite/:userName', function (req, res) {
-    inviteCtrl.deleteFriendInvite(req, res)
-})
 
 
 
-// oldMessage
-router.get('/oldMessage/:roomName', function (req, res) {
 
-    chatMessageCtrl.getOldMessage(req.params.roomName).then((getOldMessage_result) => {
-        
-        res.send(JSON.stringify(getOldMessage_result))
 
-    }).catch((err) => {
+// ===========================================            oldmessage               =============================================
+router.get('/oldMessage/:groupID', function (req, res) {
 
-        console.log(err)
-
-    })
 
 
 })
+router.get('/friendOldMessage/:userID', function (req, res) {
+
+})
+
+
+
+
+
+
+
+
+
+// const upload = multer({
+//     storage: multer.memoryStorage(),
+//     limits: {
+//         fileSize: 2 * 1024 * 1024,  // 限制 2 MB
+//     },
+//     fileFilter(req, file, callback) {  // 限制檔案格式為 image
+//         if (!file.mimetype.match('image/jpeg')) {
+//             callback(new Error().message = '檔案格式錯誤');
+//         } else {
+//             callback(null, true);
+//         }
+//     }
+// });
+
+// router.post('/Image', upload.single('image'), async (req, res, next) => {
+//     imgmodules.uploadImage(req.file.originalname, req.file.buffer).then((getChatPreloadMessage_result) => {
+
+//         console.log("success")
+
+//     }).catch((err) => {
+
+//         console.log("err")
+//     })
+// });
+
+// router.get('/Image', function (req, res) {
+//     imgmodules.uploadImage(1, 1).then((getChatPreloadMessage_result) => {
+//         res.send(getChatPreloadMessage_result[2].img)
+
+//     }).catch((err) => {
+
+//         console.log(err)
+//     })
+//     // res.sendFile('/OnlineText/public/images/login_background.png');
+// });
+
 export default router

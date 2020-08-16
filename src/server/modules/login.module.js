@@ -1,54 +1,36 @@
-import mysql from 'mysql'
-import config from '../../config/config'
-
-const connectionPool = mysql.createPool({
-    connection: 10,
-    host: config.mysqlHost,
-    user: config.mysqlUserName,
-    password: config.mysqlPass,
-    database: config.mysqlDatabase
-})
+import mysql from './mysql.module'
 
 const checkAccount = (userAccount, userPassword) => {
 
     return new Promise((resolve, reject) => {
 
-        connectionPool.getConnection((connectionError, connection) => {
+        var sqlCommand = "Select UserPassword From Account Where UserAccount = '" + userAccount + "'"
 
-            if (connectionError) {
+        mysql.mysqlCommand(sqlCommand)
+        .then(result => {
 
-                reject(connectionError)
+            if (result.length == 0) {
+
+                resolve("account not found")
+
+            } else if (result[0].UserPassword === userPassword) {
+
+                resolve("success")
 
             } else {
 
-                var sqlCommand = "Select UserPassword From account Where UserAccount = '" + userAccount + "'"
+                resolve("password incorrect")
 
-                connection.query(sqlCommand, function(err, result){
+            }
 
-                    if (err) {
+        }).catch(err => {
+            if (err) {
 
-                        console.error('SQL error:', err)
-                        reject(err)
-                        
-                    } else if (result.length == 0) {
+                console.error('SQL error:', err)
+                reject(err)
 
-                        resolve("Account not found")
-
-                    } else if (result[0].UserPassword === userPassword) {
-
-                        resolve("success")
-
-                    } else {
-
-                        resolve("Password incorrect")
-                        
-                    }
-
-                })
-                connection.release()
             }
         })
-
     })
 }
 

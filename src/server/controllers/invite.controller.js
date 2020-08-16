@@ -1,39 +1,47 @@
 import jwtModule from '../modules/jwt.module'
 import inviteModule from '../modules/invite.module'
 import userDataModule from '../modules/userData.module'
-import chatRoomModule from '../modules/chatRoom.module'
+import groupModule from '../modules/group.module'
 
 
 const getFriendInvite = (req, res) => {
 
     const token = req.cookies.token;
 
-    jwtModule.jwtVerify(token).then((jwtVerify_result) => {
+    jwtModule.jwtVerify(token)
+    .then(result => {
 
-        userDataModule.getUserID(jwtVerify_result._id).then((getUserID_result) => {
+        return userDataModule.getUserID(result._id)
 
-            inviteModule.getFriendInvite(getUserID_result.UserID).then((getFriendInvite_result) => {
+    })
+    .then(result => {
 
-                var jsonpackage = {}
-                jsonpackage["messageName"] = "friendInvite"
-                jsonpackage["data"] = getFriendInvite_result
-                res.send(JSON.stringify(jsonpackage))
+        if(result.length === 1){
+            
+            return inviteModule.getFriendInvite(result[0].UserID)
 
-            }).catch((err) => {
+        }else{
 
-                res.send(err)
+            var jsonpackage = {}
+            jsonpackage["messageName"] = "getFriendInvite"
+            jsonpackage["data"] = "you are not in the database"
+            res.send(JSON.stringify(jsonpackage))
+            return Promise.reject(0)
 
-            })
+        } 
 
-        }).catch((err) => {
+    })
+    .then(result => {
 
-            res.send(err)
+        var jsonpackage = {}
+        jsonpackage["messageName"] = "getFriendInvite"
+        jsonpackage["data"] = result
+        res.send(JSON.stringify(jsonpackage))
 
-        })
+    })
+    .catch(err => {
 
-    }).catch((err) => {
-
-        res.send(err)
+        res.redirect('https://127.0.0.1:3000/OnlineText/login');
 
     })
 
@@ -43,36 +51,40 @@ const deleteFriendInvite = (req, res) => {
 
     const token = req.cookies.token;
 
-    jwtModule.jwtVerify(token).then((jwtVerify_result) => {
+    jwtModule.jwtVerify(token)
+    .then(result => {
 
-        userDataModule.getUserID(jwtVerify_result._id).then((toUserID_result) => {
+        return userDataModule.getUserID(result._id)
 
-            userDataModule.getUserID(req.params.userName).then((fromUserID_result) => {
+    })
+    .then(result => {
 
-                inviteModule.deleteFriendInvite(toUserID_result.UserID, fromUserID_result.UserID).then((deleteFriendInvite_result) => {
+        if(result.length === 1){
 
-                }).catch((err) => {
+            return inviteModule.deleteFriendInvite(result[0].UserID, req.params.userID)
 
-                    res.send(err)
+        }else{
 
-                })
+            jsonpackage["messageName"] = "deleteFriendInvite"
+            jsonpackage["data"] = "you are not in the database"
+            res.send(JSON.stringify(jsonpackage))
+            return Promise,reject(0)
 
-            }).catch((err) => {
+        }
 
-                res.send(err)
+    })
+    .then(result => {
 
-            })
+        var jsonpackage = {}
+        jsonpackage["messageName"] = "deleteFriendInvite"
+        jsonpackage["data"] = "success"
+        res.send(JSON.stringify(jsonpackage))
 
-        }).catch((err) => {
-
-            res.send(err)
-
-        })
         
+    })
+    .catch((err) => {
 
-    }).catch((err) => {
-
-        res.send(err)
+        res.redirect('https://127.0.0.1:3000/OnlineText/login');
 
     })
 
@@ -82,72 +94,97 @@ const postFriendInvite = (req, res) => {
 
     const token = req.cookies.token;
 
-    jwtModule.jwtVerify(token).then((jwtVerify_result) => {
+    jwtModule.jwtVerify(token)
+    .then((jwtVerify_result) => {
 
-        userDataModule.getUserID(jwtVerify_result._id).then((fromUserID_result) => {
+        return Promise.all([
+                    userDataModule.getUserID(jwtVerify_result._id),
+                    userDataModule.getUserID(req.params.userName)
+                ])
 
-            userDataModule.getUserID(req.params.userName).then((toUserID_result) => {
+    })
+    .then(result => {
 
-                inviteModule.postFriendInvite(toUserID_result.UserID, fromUserID_result.UserID).then((postFriendInvite_result) => {
+        if(result[0].length === 1 && result[1].length === 1){
 
-                }).catch((err) => {
+            return inviteModule.postFriendInvite(result[1][0].UserID, result[0][0].UserID)
 
-                    res.send(err)
+        }else{
 
-                })
+            var jsonpackage = {}
+            jsonpackage["messageName"] = "postFriendInvite"
+            jsonpackage["data"] = "you are not in the database"
+            res.send(JSON.stringify(jsonpackage))
+            return Promise,reject(0)
 
-            }).catch((err) => {
+        }
+    })
+    .then(result => {
 
-                res.send(err)
+        var jsonpackage = {}
+        jsonpackage["messageName"] = "postFriendInvite"
+        jsonpackage["data"] = "success"
+        res.send(JSON.stringify(jsonpackage))
 
-            })
-
-        }).catch((err) => {
-
-            res.send(err)
-
-        })
+    })
+    .catch(err => {
 
         
-
-    }).catch((err) => {
-
-        res.send(err)
+        if (err === "already friend" || err === "already invite"){
+            var jsonpackage = {}
+            jsonpackage["messageName"] = "postFriendInvite"
+            jsonpackage["data"] = err
+            res.send(JSON.stringify(jsonpackage))
+        }else{
+            res.redirect('https://127.0.0.1:3000/OnlineText/login');
+        }
 
     })
 
 }
 
+
+
+
+
 const getGroupInvite = (req, res) => {
 
     const token = req.cookies.token;
 
-    jwtModule.jwtVerify(token).then((jwtVerify_result) => {
+    jwtModule.jwtVerify(token)
+    .then(result => {
 
-        userDataModule.getUserID(jwtVerify_result._id).then((getUserID_result) => {
+        return userDataModule.getUserID(result._id)
 
-            inviteModule.getGroupInvite(getUserID_result.UserID).then((deleteGroupInvite_result) => {
+    })
+    .then(result => {
 
-                var jsonpackage = {}
-                jsonpackage["messageName"] = "groupInvite"
-                jsonpackage["data"] = deleteGroupInvite_result
-                res.send(JSON.stringify(jsonpackage))
+        if(result.length === 1){
 
-            }).catch((err) => {
+            return inviteModule.getGroupInvite(result[0].UserID)
 
-                res.send(err)
+        }else{
 
-            })
+            var jsonpackage = {}
+            jsonpackage["messageName"] = "getGroupInvite"
+            jsonpackage["data"] = "you are not in the database"
+            res.send(JSON.stringify(jsonpackage))
+            return Promise,reject(0)
 
-        }).catch((err) => {
+        }
 
-            res.send(err)
+    })
+    .then(result => {
 
-        })
+        var jsonpackage = {}
+        jsonpackage["messageName"] = "getGroupInvite"
+        jsonpackage["data"] = result
+        res.send(JSON.stringify(jsonpackage))
 
-    }).catch((err) => {
+    })
+    .catch((err) => {
 
-        res.send(err)
+        res.redirect('https://127.0.0.1:3000/OnlineText/login');
 
     })
 
@@ -157,74 +194,92 @@ const deleteGroupInvite = (req, res) => {
 
     const token = req.cookies.token;
 
-    jwtModule.jwtVerify(token).then((jwtVerify_result) => {
+    jwtModule.jwtVerify(token)
+    .then(result => {
+        return userDataModule.getUserID(result._id)
 
-        userDataModule.getUserID(jwtVerify_result._id).then((getUserID_result) => {
+    })
+    .then(result => {
 
-            chatRoomModule.getRoomID(req.params.roomName).then((getRoomID_result) => {
+        if(result.length === 1){
 
-                inviteModule.deleteGroupInvite(getUserID_result.UserID, getRoomID_result).then((deleteGroupInvite_result) => {
+            return inviteModule.deleteGroupInvite(result[0].UserID, req.params.groupID)
 
-                }).catch((err) => {
+        }else{
 
-                    res.send(err)
+            jsonpackage["messageName"] = "deleteGroupInvite"
+            jsonpackage["data"] = "you are not in the database"
+            res.send(JSON.stringify(jsonpackage))
+            return Promise,reject(0)
 
-                })
+        }   
 
-            }).catch((err) => {
+    })
+    .then(result => {
 
-                res.send(err)
+        var jsonpackage = {}
+        jsonpackage["messageName"] = "deleteGroupInvite"
+        jsonpackage["data"] = "success"
+        res.send(JSON.stringify(jsonpackage))
 
-            })
+    })
+    .catch((err) => {
 
-        }).catch((err) => {
+        res.redirect('https://127.0.0.1:3000/OnlineText/login');
 
-            res.send(err)
-
-        })
-
-    }).catch((err) => {
-
-        res.send(err)
 
     })
 
 }
 
 const postGroupInvite = (req, res) => {
-
     const token = req.cookies.token;
 
-    jwtModule.jwtVerify(token).then((jwtVerify_result) => {
+    jwtModule.jwtVerify(token)
+    .then((jwtVerify_result) => {
 
-        userDataModule.getUserID(jwtVerify_result._id).then((getUserID_result) => {
+        return Promise.all([
+                    userDataModule.getUserID(jwtVerify_result._id),
+                    userDataModule.getUserID(req.params.userName)
+                ])
 
-            chatRoomModule.getRoomID(req.params.roomName).then((getRoomID_result) => {
-
-                inviteModule.postGroupInvite(getUserID_result.UserID, getRoomID_result).then((postGroupInvite_result) => {
-
-                }).catch((err) => {
-
-                    res.send(err)
-
-                })
-
-            }).catch((err) => {
-
-                res.send(err)
-
-            })
-
-        }).catch((err) => {
-
-            res.send(err)
-
-        })
+    })
+    .then(result => {
         
+        if(result[0].length === 1 && result[1].length === 1){
+            
+            return inviteModule.postGroupInvite(result[1][0].UserID, req.params.groupID)
 
-    }).catch((err) => {
+        }else{
 
-        res.send(err)
+            var jsonpackage = {}
+            jsonpackage["messageName"] = "postGroupInvite"
+            jsonpackage["data"] = "you are not in the database"
+            res.send(JSON.stringify(jsonpackage))
+            return Promise,reject(0)
+
+        }
+
+    })
+    .then(result => {
+
+        var jsonpackage = {}
+        jsonpackage["messageName"] = "postGroupInvite"
+        jsonpackage["data"] = "success"
+        res.send(JSON.stringify(jsonpackage))
+
+    })
+    .catch(err => {
+
+
+        if (err === "already member" || err === "already invite") {
+            var jsonpackage = {}
+            jsonpackage["messageName"] = "postGroupInvite"
+            jsonpackage["data"] = err
+            res.send(JSON.stringify(jsonpackage))
+        } else {
+            res.redirect('https://127.0.0.1:3000/OnlineText/login');
+        }
 
     })
 

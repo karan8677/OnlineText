@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 
+
 const SECRET = 'thisismynewproject'
 const expires = 1000 * 1000
 
@@ -30,7 +31,7 @@ const jwtSetCookie = (user_account, res)=>{
         const token = jwt.sign({ _id: user_account.toString() }, SECRET, { expiresIn: '1 day' })
         res.cookie('token', token, { maxAge: expires, httpOnly: true, secure: false })
         resolve("CookieSet");
-
+        
     })
 
 }

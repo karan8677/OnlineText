@@ -60,16 +60,24 @@ html(lang='zh-Hant-TW')
     script.
       document.getElementById('register').onclick = function () {
       if(register_check()){
+      console.log("inherr")
       var xhr_register = new XMLHttpRequest()
       xhr_register.open("POST", "file/register/" + document.getElementById('InputEmail_register').value + "/" + document.getElementById('InputPassword_register').value);
       xhr_register.onload = function () {
       var onLoadMessage = JSON.parse(xhr_register.responseText)
       console.log(onLoadMessage)
-      if (onLoadMessage.result === "success") {
+      if(onLoadMessage.messageName === "register"){
+      if (onLoadMessage.data === "success") {
       location.href = ('https://127.0.0.1:3000/OnlineText/login');
-      } else if (onLoadMessage.result === "fail") {
+      }
+      // else if (onLoadMessage.result === "fail") {
+      //     console.log(document.getElementById('error').innerHTML)
+      //     document.getElementById('error').innerHTML = onLoadMessage.data
+      // }
+      else {
       console.log(document.getElementById('error').innerHTML)
       document.getElementById('error').innerHTML = onLoadMessage.data
+      }
       }
       }
       xhr_register.send();

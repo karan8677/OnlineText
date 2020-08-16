@@ -3,41 +3,42 @@ import jwtModule from '../modules/jwt.module'
 
 const login = (req, res) => {
 
-    loginModule.checkAccount(req.params.userAccount, req.params.userPassword).then((checkAccount_result) => {
 
-        if (checkAccount_result === "success"){
+    loginModule.checkAccount(req.params.userAccount, req.params.userPassword)
+        .then(result => {
+            if (result === "success") {
 
-            jwtModule.jwtSetCookie(req.params.userAccount, res).then((jwtSetCookie_result) => {
+                return jwtModule.jwtSetCookie(req.params.userAccount, res)
 
-                if (jwtSetCookie_result === "CookieSet") {
+            } else {
 
-                    var jsonpackage = {}
-                    jsonpackage["result"] = "success"
-                    res.send(JSON.stringify(jsonpackage))
+                var jsonpackage = {}
+                jsonpackage["messageName"] = "login"
+                jsonpackage["data"] = result
+                res.send(JSON.stringify(jsonpackage))
+                return Promise.reject(0)
 
-                }
-                
-            }).catch((err) => {
-
-                res.send(err)
-
-            })
-
-        }else{
+            }
+        })
+        .then(result => {
 
             var jsonpackage = {}
-            jsonpackage["result"] = "fail"
-            jsonpackage["data"] = checkAccount_result
+            jsonpackage["messageName"] = "login"
+            jsonpackage["data"] = "success"
             res.send(JSON.stringify(jsonpackage))
 
-        }
-        
+        })
+        .catch((err) => {
 
-    }).catch((err) => {
+            if (err !== 0) {
 
-        res.send(err)
+                var jsonpackage = {}
+                jsonpackage["messageName"] = "error"
+                jsonpackage["data"] = err
+                res.send(JSON.stringify(jsonpackage))
 
-    })
+            }
+        })
 
 }
 export default {

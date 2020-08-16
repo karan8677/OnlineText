@@ -1,12 +1,8 @@
 import express from 'express'
-import mainPageCtrl from '../controllers/mainPage.Controller'
-
 const router = express.Router()
 
 router.get('/', (req, res) => {
-
-    mainPageCtrl.mainPageGet(req, res)
-
+    res.render('ErrorPage')
 })
 
 export default router

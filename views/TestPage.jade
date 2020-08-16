@@ -1,0 +1,136 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    meta(http-equiv='X-UA-Compatible', content='ie=edge')
+    title Node.js upload images
+    link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css')
+    style.
+      div.preview-images > img {
+      width: 30%;
+      }
+  body
+    // <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+    script(src='https://code.jquery.com/jquery-3.4.1.min.js')
+    script(type='text/javascript').
+      var userData = new XMLHttpRequest()
+      userData.open("GET", "file/userData")
+      userData.onload = function () {
+      let onLoadMessage = JSON.parse(userData.responseText)
+      console.log(onLoadMessage)
+      };
+      userData.send()
+      //- var createGroup = new XMLHttpRequest()  //(創造群組)
+      //- createGroup.open("POST", "file/createGroup/Group test")
+      //- createGroup.onload = function(){
+      //-   let onLoadMessage = JSON.parse(createGroup.responseText)
+      //-   console.log(onLoadMessage)
+      //- }
+      //- createGroup.send()
+      var deleteGroup = new XMLHttpRequest()  //(刪除群組)
+      deleteGroup.open("DELETE", "file/deleteGroup/17")
+      deleteGroup.onload = function(){
+        let onLoadMessage = JSON.parse(deleteGroup.responseText)
+        console.log(onLoadMessage)
+      }
+      deleteGroup.send()
+      // var getGroup = new XMLHttpRequest()  //(取得user的群組)
+      // getGroup.open("GET", "file/group")
+      // getGroup.onload = function(){
+      //   let onLoadMessage = JSON.parse(getGroup.responseText)
+      //   console.log(onLoadMessage)
+      // }
+      // getGroup.send()
+      //- var postGroup = new XMLHttpRequest()  //(接受invite進入群組)
+      //- postGroup.open("POST", "file/group/17")
+      //- postGroup.onload = function(){
+      //-   let onLoadMessage = JSON.parse(postGroup.responseText)
+      //-   console.log(onLoadMessage)
+      //- }
+      //- postGroup.send()
+      //- var deleteGroup = new XMLHttpRequest()  //(退出群組)
+      //- deleteGroup.open("DELETE", "file/group/17")
+      //- deleteGroup.onload = function(){
+      //-   let onLoadMessage = JSON.parse(deleteGroup.responseText)
+      //-   console.log(onLoadMessage)
+      //- }
+      //- deleteGroup.send()
+      //- var getGroupInvite = new XMLHttpRequest()  //(取得user的群組邀請)
+      //- getGroupInvite.open("GET", "file/groupInvite")
+      //- getGroupInvite.onload = function(){
+      //-   let onLoadMessage = JSON.parse(getGroupInvite.responseText)
+      //-   console.log(onLoadMessage)
+      //- }
+      //- getGroupInvite.send()
+      //- var postGroupInvite = new XMLHttpRequest() //(對其他user發出群組邀請)
+      //- postGroupInvite.open("POST", "file/groupInvite/456@gmail.com/17")
+      //- postGroupInvite.onload = function(){
+      //-   let onLoadMessage = JSON.parse(postGroupInvite.responseText)
+      //-   console.log(onLoadMessage)
+      //- }
+      //- postGroupInvite.send()
+      //- var deleteGroupInvite = new XMLHttpRequest() //(拒絕邀請)
+      //- deleteGroupInvite.open("DELETE", "file/groupInvite/17")
+      //- deleteGroupInvite.onload = function(){
+      //-   let onLoadMessage = JSON.parse(deleteGroupInvite.responseText)
+      //-   console.log(onLoadMessage)
+      //- }
+      //- deleteGroupInvite.send()
+      //- var getUserFriend = new XMLHttpRequest() //(取得user的friend)
+      //- getUserFriend.open("GET", "file/friend")
+      //- getUserFriend.onload = function(){
+      //-   let onLoadMessage = JSON.parse(getUserFriend.responseText)
+      //-   console.log(onLoadMessage)
+      //- }
+      //- getUserFriend.send()
+      //- var postFriend = new XMLHttpRequest() //(接受邀請加為好友)
+      //- postFriend.open("POST", "file/friend/2")
+      //- postFriend.onload = function(){
+      //- let onLoadMessage = JSON.parse(postFriend.responseText)
+      //- console.log(onLoadMessage)
+      //- }
+      //- postFriend.send()
+      //- var deleteFriend = new XMLHttpRequest() //(刪除好友)
+      //- deleteFriend.open("DELETE", "file/friend/2")
+      //- deleteFriend.onload = function(){
+      //-   let onLoadMessage = JSON.parse(deleteFriend.responseText)
+      //-   console.log(onLoadMessage)
+      //- }
+      //- deleteFriend.send()
+      //- var getFrienInvite = new XMLHttpRequest() //(取得user的好友邀請)
+      //- getFrienInvite.open("GET", "file/friendInvite")
+      //- getFrienInvite.onload = function(){
+      //-   let onLoadMessage = JSON.parse(getFrienInvite.responseText)
+      //-   console.log(onLoadMessage)
+      //- }
+      //- getFrienInvite.send()
+      // var postFrienInvite = new XMLHttpRequest() //(對其他user發出好友邀請)
+      // postFrienInvite.open("POST", "file/friendInvite/123@gmail.com")
+      // postFrienInvite.onload = function(){
+      //   let onLoadMessage = JSON.parse(postFrienInvite.responseText)
+      //   console.log(onLoadMessage)
+      // }
+      // postFrienInvite.send()
+      // var deleteFrienInvite = new XMLHttpRequest() //(拒絕好友邀請)
+      // deleteFrienInvite.open("DELETE", "file/friendInvite/1")
+      // deleteFrienInvite.onload = function(){
+      //   let onLoadMessage = JSON.parse(deleteFrienInvite.responseText)
+      //   console.log(onLoadMessage)
+      // }
+      // deleteFrienInvite.send()
+      // var getOldGroupMessage = new XMLHttpRequest() //(取得群組的舊訊息)
+      // getOldGroupMessage.open("GET", "file/oldGroupMessage/:GroupID")
+      // getOldGroupMessage.onload = function(){
+      //   let onLoadMessage = JSON.parse(getOldGroupMessage.responseText)
+      //   console.log(onLoadMessage)
+      // }
+      // getOldGroupMessage.send()
+      // var getOldFriendMessage = new XMLHttpRequest() //(取得好友的舊訊息)
+      // getOldFriendMessage.open("GET", "file/oldFriendMessage/:friendID")
+      // getOldFriendMessage.onload = function(){
+      //   let onLoadMessage = JSON.parse(getOldFriendMessage.responseText)
+      //   console.log(onLoadMessage)
+      // }
+      // getOldFriendMessage.send()
+    h1 This is a testing page

@@ -1,172 +1,100 @@
-import mysql from 'mysql'
-import config from '../../config/config'
+import mysql from './mysql.module'
 
-const connectionPool = mysql.createPool({
-    connection: 10,
-    host: config.mysqlHost,
-    user: config.mysqlUserName,
-    password: config.mysqlPass,
-    database: config.mysqlDatabase
-})
-
-const getUserRoom = (userID) => {
+const getUserGroup = (userID) => {
 
     return new Promise((resolve, reject) => {
 
-        connectionPool.getConnection((connectionError, connection) => {
+        var sqlCommand = "SELECT GroupList.GroupID, GroupList.GroupName " +
+            "FROM Member " +
+            "INNER JOIN GroupList " +
+            "ON GroupList.GroupID = Member.GroupID " +
+            "WHERE Member.UserID = " +
+            userID
 
-            if (connectionError) {
-                reject(connectionError)
+        mysql.mysqlCommand(sqlCommand)
+        .then(result => {
+            resolve(result)
 
-            } else {
-
-                var sqlCommand = "SELECT chatroom.RoomID, chatroom.Time, member.UserID, chatroom.RoomName " +
-                    "FROM member " +
-                    "INNER JOIN chatroom " +
-                    "ON chatroom.RoomID = member.RoomID " +
-                    "WHERE member.UserID = " +
-                    userID
-
-                connection.query(sqlCommand, function (err, result) {
-                    if (err) {
-
-                        console.error('SQL error:', err)
-                        reject(err)
-
-                    } else {
-
-                        resolve(result);
-
-                    }
-                })
-
-                connection.release()
-
-            }
+        })
+        .catch(err => {
+            console.error('SQL error:', err)
+            reject(err)
         })
 
     })
 }
 
-const getUserFriend = (UserID) => {
+const getUserFriend = (userID) => {
 
     return new Promise((resolve, reject) => {
 
-        connectionPool.getConnection((connectionError, connection) => {
+        var sqlCommand = "SELECT Account.UserAccount " +
+            "FROM Account " +
+            "INNER JOIN FriendList " +
+            "ON FriendList.UserID2 = Account.UserID " +
+            "WHERE FriendList.UserID1 = " +
+            userID +
 
-            if (connectionError) {
+            " UNION SELECT Account.UserAccount " +
+            "FROM Account " +
+            "INNER JOIN FriendList " +
+            "ON FriendList.UserID1 = Account.UserID " +
+            "WHERE FriendList.UserID2 = " +
+            userID 
 
-                reject(connectionError)
+            mysql.mysqlCommand(sqlCommand)
+            .then(result => {
+                resolve(result)
+            })
+            .catch(err => {
+                console.error('SQL error:', err)
+                reject(err)
+            })
 
-            } else {
+    })
+}
 
-                var sqlCommand = "SELECT Account.UserAccount " +
-                    "FROM Account " +
-                    "INNER JOIN Friend " +
-                    "ON Friend.UserID2 = Account.UserID " +
-                    "WHERE Friend.UserID1 = " +
-                    UserID +
+const getUserID = (userAccount) => {
 
-                    " UNION SELECT Account.UserAccount " +
-                    "FROM Account " +
-                    "INNER JOIN Friend " +
-                    "ON Friend.UserID1 = Account.UserID " +
-                    "WHERE Friend.UserID2 = " +
-                    UserID 
+    return new Promise((resolve, reject) => {
 
-                    connection.query(sqlCommand, function (err, result) {
+        var sqlCommand = "SELECT UserID FROM Account WHERE UserAccount = '" + userAccount + "'"
+        mysql.mysqlCommand(sqlCommand)
+        .then(result => {
 
-                        if (err) {
+            resolve(result)
+            
+        })
+        .catch(err => {
+            console.error('SQL error:', err)
+            reject(err)
+        })
+    })
+}
 
-                            console.error('SQL error:', err)
-                            reject(err)
+const getUserData = (userAccount) => {
 
-                        } else {
+    return new Promise((resolve, reject) => {
 
-                            resolve(result);
-                        }
-                    })
-
-                connection.release()
-
-            }
+        var sqlCommand = "SELECT UserID, UserAccount FROM Account WHERE UserAccount = '" + userAccount + "'"
+        
+        mysql.mysqlCommand(sqlCommand)
+        .then(result => {
+            resolve(result)
+        })
+        .catch(err => {
+            console.error('SQL error:', err)
+            reject(err)
         })
 
     })
 }
 
-const getUserID = (UserAccount) => {
 
-    return new Promise((resolve, reject) => {
-
-        connectionPool.getConnection((connectionError, connection) => {
-
-            if (connectionError) {
-
-                reject(connectionError)
-
-            } else {
-
-                var sqlCommand = "SELECT UserID FROM Account WHERE UserAccount = '" + UserAccount + "'"
-                connection.query(sqlCommand, function (err, result) {
-                    var resultPackage = {}
-                    if (err) {
-
-                        console.error('SQL error:', err)
-                        reject(err)
-
-                    } else {
-
-                        resolve(result[0]);
-
-                    }
-                })
-
-                connection.release()
-
-            }
-        })
-
-    })
-}
-
-const getUserName = (insertValues) => {
-
-    return new Promise((resolve, reject) => {
-
-        connectionPool.getConnection((connectionError, connection) => {
-
-            if (connectionError) {
-
-                reject(connectionError)
-
-            } else {
-
-                var sqlCommand = "SELECT UserID FROM Account WHERE UserAccount = '" + insertValues._id + "'"
-                connection.query(sqlCommand, function (err, result) {
-                    if (err) {
-
-                        console.error('SQL error:', err)
-                        reject(err)
-
-                    } else {
-
-                        resolve(result[0]);
-
-                    }
-                })
-
-                connection.release()
-
-            }
-        })
-
-    })
-}
 
 export default {
-    getUserRoom,
+    getUserGroup,
     getUserFriend,
-    getUserName,
-    getUserID
+    getUserID,
+    getUserData
 }

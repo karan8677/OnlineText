@@ -2,39 +2,42 @@ import registerModule from '../modules/register.module'
 import loginModule from '../modules/login.module'
 
 const register = (req, res) => {
+    loginModule.checkAccount(req.params.userAccount, req.params.userPassword)
+        .then(result => {
+            if (result === "account not found") {
 
-    loginModule.checkAccount(req.params.userAccount, req.params.userPassword).then((checkAccount_result) => {
-        console.log(checkAccount_result)
-        if (checkAccount_result === "Account not found"){
+                return registerModule.createAccount(req.params.userAccount, req.params.userPassword)
 
-            registerModule.createAccount(req.params.userAccount, req.params.userPassword).then((createAccount_result) => {
+            } else if (result === "success" || result === "password incorrect") {
 
                 var jsonpackage = {}
-                jsonpackage["result"] = "success"
+                jsonpackage["messageName"] = "register"
+                jsonpackage["data"] = "account exist"
                 res.send(JSON.stringify(jsonpackage))
+                return Promise.reject(0)
+            }
 
-            }).catch((err) => {
-
-                res.send(err)
-
-            })
-
-        } else if (checkAccount_result === "success" || checkAccount_result === "Password incorrect"){
+        })
+        .then(result => {
 
             var jsonpackage = {}
-            jsonpackage["result"] = "fail"
-            jsonpackage["data"] = "Account exist"
+            jsonpackage["messageName"] = "register"
+            jsonpackage["data"] = "success"
             res.send(JSON.stringify(jsonpackage))
 
-        }
-        console.log("sssss")
+        })
+        .catch((err) => {
 
+            if (err !== 0) {
 
-    }).catch((err) => {
+                var jsonpackage = {}
+                jsonpackage["messageName"] = "error"
+                jsonpackage["data"] = err
+                res.send(JSON.stringify(jsonpackage))
 
-        res.send(err)
+            }
 
-    })
+        })
 
 }
 
