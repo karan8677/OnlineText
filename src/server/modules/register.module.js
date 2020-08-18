@@ -15,7 +15,7 @@ const createAccount = (userAccount, userPassword) => {
 
         })
         .catch(err => {
-            console.error('SQL error:', err)
+            console.error('createAccount error:', err)
             reject(err)
         })
 

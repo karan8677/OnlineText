@@ -1,5 +1,6 @@
 import express from 'express'
 import groupCtrl from '../controllers/group.controller'
+import friendCtrl from '../controllers/friend.controller'
 import inviteCtrl from '../controllers/invite.controller'
 import userDataCtrl from '../controllers/userData.controller'
 import loginCtrl from '../controllers/login.controller'
@@ -51,19 +52,22 @@ router.delete('/deleteGroup/:groupID', function (req, res) {
 	groupCtrl.deleteGroup(req, res)
 
 })
+
+
+
 router.get('/group', function (req, res) {
 
-	userDataCtrl.getGroup(req, res)
+	groupCtrl.getGroup(req, res)
 
 })
 router.post('/group/:groupID', function (req, res) {
 
-	userDataCtrl.addGroup(req, res)
+	groupCtrl.joinGroup(req, res)
 
 })
 router.delete('/group/:groupID', function (req, res) {
 
-	userDataCtrl.deleteGroup(req, res)
+	groupCtrl.leaveGroup(req, res)
 
 })
 router.get('/groupInvite', function (req, res) {
@@ -71,14 +75,17 @@ router.get('/groupInvite', function (req, res) {
 	inviteCtrl.getGroupInvite(req, res)
 
 })
+
+
+
 router.post('/groupInvite/:userName/:groupID', function (req, res) {
 
-	inviteCtrl.postGroupInvite(req, res)
+	inviteCtrl.sendGroupInvite(req, res)
 
 })
 router.delete('/groupInvite/:groupID', function (req, res) {
 
-	inviteCtrl.deleteGroupInvite(req, res)
+	inviteCtrl.rejectGroupInvite(req, res)
 
 })
 
@@ -88,17 +95,17 @@ router.delete('/groupInvite/:groupID', function (req, res) {
 // ===========================================            friend               =============================================
 router.get('/friend', function (req, res) {
 
-	userDataCtrl.getFriend(req, res)
+	friendCtrl.getFriend(req, res)
 
 })
 router.post('/friend/:userID', function (req, res) {
 
-	userDataCtrl.addFriend(req, res)
+	friendCtrl.addFriend(req, res)
 
 })
 router.delete('/friend/:userID', function (req, res) {
 
-	userDataCtrl.deleteFriend(req, res)
+	friendCtrl.deleteFriend(req, res)
 
 })
 router.get('/friendInvite', function (req, res) {
@@ -108,12 +115,12 @@ router.get('/friendInvite', function (req, res) {
 })
 router.post('/friendInvite/:userName', function (req, res) {
 
-	inviteCtrl.postFriendInvite(req, res)
+	inviteCtrl.snedFriendInvite(req, res)
 
 })
 router.delete('/friendInvite/:userID', function (req, res) {
 
-	inviteCtrl.deleteFriendInvite(req, res)
+	inviteCtrl.rejectFriendInvite(req, res)
 
 })
 

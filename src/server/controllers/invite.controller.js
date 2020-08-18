@@ -1,295 +1,183 @@
 import jwtModule from '../modules/jwt.module'
 import inviteModule from '../modules/invite.module'
+import friendModule from '../modules/friend.module'
 import userDataModule from '../modules/userData.module'
 import groupModule from '../modules/group.module'
 
 
-const getFriendInvite = (req, res) => {
+const getFriendInvite = async (req, res) => {
+    
+    var jsonpackage ={}
+    jsonpackage["messageName"] = "getFriendInvite"
+    jsonpackage["data"] = "Auth fail or database error"
+    try{
 
-    const token = req.cookies.token;
+        const token = req.cookies.token;
+        const jwtAuthResult = await jwtModule.jwtVerify(token)
+        const getUserIDResult = await userDataModule.getUserID(jwtAuthResult._id)
+        if (getUserIDResult.length !== 1){
+            throw new Error()
+        }
+        const getFriendInviteResult = await inviteModule.getUserFriendInvite(getUserIDResult[0].UserID)
+        jsonpackage["data"] = getFriendInviteResult
 
-    jwtModule.jwtVerify(token)
-    .then(result => {
-
-        return userDataModule.getUserID(result._id)
-
-    })
-    .then(result => {
-
-        if(result.length === 1){
-            
-            return inviteModule.getFriendInvite(result[0].UserID)
-
-        }else{
-
-            var jsonpackage = {}
-            jsonpackage["messageName"] = "getFriendInvite"
-            jsonpackage["data"] = "you are not in the database"
-            res.send(JSON.stringify(jsonpackage))
-            return Promise.reject(0)
-
-        } 
-
-    })
-    .then(result => {
-
-        var jsonpackage = {}
-        jsonpackage["messageName"] = "getFriendInvite"
-        jsonpackage["data"] = result
-        res.send(JSON.stringify(jsonpackage))
-
-    })
-    .catch(err => {
-
-        res.redirect('https://127.0.0.1:3000/OnlineText/login');
-
-    })
+    }catch(err){
+        jsonpackage["messageName"] = "error"
+    }
+    res.send(JSON.stringify(jsonpackage))
 
 }
 
-const deleteFriendInvite = (req, res) => {
+const rejectFriendInvite = async (req, res) => {
+    var jsonpackage = {}
+    jsonpackage["messageName"] = "rejectFriendInvite"
+    jsonpackage["data"] = "Auth fail or database error"
+    try{
+        const token = req.cookies.token;
+        const jwtAuthResult = await jwtModule.jwtVerify(token)
+        const getUserIDResult = await userDataModule.getUserID(jwtAuthResult._id)
+        if (getUserIDResult.length !== 1){
+            throw new Error()
+        }
+        const deleteFriendInviteResult = await inviteModule.deleteFriendInvite(getUserIDResult[0].UserID, req.params.userID)
+        jsonpackage["data"] = "success"
 
-    const token = req.cookies.token;
+    }catch(err){
+        jsonpackage["messageName"] = "error"
+    }
+    res.send(JSON.stringify(jsonpackage))
+    
+}
 
-    jwtModule.jwtVerify(token)
-    .then(result => {
+const snedFriendInvite = async (req, res) => {
+    var jsonpackage = {}
+    jsonpackage["messageName"] = "snedFriendInvite"
+    jsonpackage["data"] = "Auth fail or database error"
+    try{
+        const token = req.cookies.token
+        const jwtAuthResult = await jwtModule.jwtVerify(token)
+        const getUserIDResult = await Promise.all([
+            userDataModule.getUserID(jwtAuthResult._id),
+            userDataModule.getUserID(req.params.userName)
+        ])
 
-        return userDataModule.getUserID(result._id)
-
-    })
-    .then(result => {
-
-        if(result.length === 1){
-
-            return inviteModule.deleteFriendInvite(result[0].UserID, req.params.userID)
-
-        }else{
-
-            jsonpackage["messageName"] = "deleteFriendInvite"
-            jsonpackage["data"] = "you are not in the database"
-            res.send(JSON.stringify(jsonpackage))
-            return Promise,reject(0)
-
+        if (getUserIDResult[0].length !== 1 || getUserIDResult[1].length !== 1){
+            throw new Error()
         }
 
-    })
-    .then(result => {
+        const getFriendTestResult = await Promise.all([
+            inviteModule.getFriendInvite(getUserIDResult[1][0].UserID
+                                        , getUserIDResult[0][0].UserID),
 
-        var jsonpackage = {}
-        jsonpackage["messageName"] = "deleteFriendInvite"
-        jsonpackage["data"] = "success"
-        res.send(JSON.stringify(jsonpackage))
+            friendModule.getFriend(getUserIDResult[1][0].UserID
+                                , getUserIDResult[0][0].UserID)
+        ])
 
+        if (getFriendTestResult[1].length !== 0){
+            jsonpackage["data"] = "already friend"
+        } else if (getFriendTestResult[0].length !== 0) {
+            jsonpackage["data"] = "already invite"
+        }else{
+            const postFriendInviteResult = await inviteModule.postFriendInvite(getUserIDResult[1][0].UserID
+                , getUserIDResult[0][0].UserID)
+            jsonpackage["data"] = "success"
+        }
+    }catch(err){
+        jsonpackage["messageName"] = "error"
+        console.log(err)
+    }
+    res.send(JSON.stringify(jsonpackage))
+    
+}
+
+
+
+
+
+const getGroupInvite = async (req, res) => {
+
+    var jsonpackage = {}
+    jsonpackage["messageName"] = "getGroupInvite"
+    jsonpackage["data"] = "Auth fail or database error"
+    try{
+
+        const token = req.cookies.token
+        const jwtAuthResult = await jwtModule.jwtVerify(token)
+        const getUserIDResult = await userDataModule.getUserID(jwtAuthResult._id)
+        if (getUserIDResult.length !== 1) {
+            throw new Error()
+        }
+        const getUserGroupInviteResult = await inviteModule.getUserGroupInvite(getUserIDResult[0].UserID)
+        jsonpackage["data"] = getUserGroupInviteResult
         
-    })
-    .catch((err) => {
-
-        res.redirect('https://127.0.0.1:3000/OnlineText/login');
-
-    })
-
+    }catch(err){
+        jsonpackage["messageName"] = "error"
+    }
+    res.send(JSON.stringify(jsonpackage))
 }
 
-const postFriendInvite = (req, res) => {
+const rejectGroupInvite = async (req, res) => {
 
-    const token = req.cookies.token;
-
-    jwtModule.jwtVerify(token)
-    .then((jwtVerify_result) => {
-
-        return Promise.all([
-                    userDataModule.getUserID(jwtVerify_result._id),
-                    userDataModule.getUserID(req.params.userName)
-                ])
-
-    })
-    .then(result => {
-
-        if(result[0].length === 1 && result[1].length === 1){
-
-            return inviteModule.postFriendInvite(result[1][0].UserID, result[0][0].UserID)
-
-        }else{
-
-            var jsonpackage = {}
-            jsonpackage["messageName"] = "postFriendInvite"
-            jsonpackage["data"] = "you are not in the database"
-            res.send(JSON.stringify(jsonpackage))
-            return Promise,reject(0)
-
+    var jsonpackage = {}
+    jsonpackage["messageName"] = "rejectGroupInvite"
+    jsonpackage["data"] = "Auth fail or database error"
+    try{
+        const token = req.cookies.token
+        const jwtAuthResult = await jwtModule.jwtVerify(token)
+        const getUserIDResult = await userDataModule.getUserID(jwtAuthResult._id)
+        if (getUserIDResult.length !== 1){
+            throw new Error()
         }
-    })
-    .then(result => {
-
-        var jsonpackage = {}
-        jsonpackage["messageName"] = "postFriendInvite"
+        const deleteGroupInviteResult = await inviteModule.deleteGroupInvite(getUserIDResult[0].UserID, req.params.groupID)
         jsonpackage["data"] = "success"
-        res.send(JSON.stringify(jsonpackage))
-
-    })
-    .catch(err => {
-
-        
-        if (err === "already friend" || err === "already invite"){
-            var jsonpackage = {}
-            jsonpackage["messageName"] = "postFriendInvite"
-            jsonpackage["data"] = err
-            res.send(JSON.stringify(jsonpackage))
-        }else{
-            res.redirect('https://127.0.0.1:3000/OnlineText/login');
-        }
-
-    })
-
+    }catch(err){
+        jsonpackage["messageName"] = "error"
+    }
+    res.send(JSON.stringify(jsonpackage))
+    
 }
 
-
-
-
-
-const getGroupInvite = (req, res) => {
-
-    const token = req.cookies.token;
-
-    jwtModule.jwtVerify(token)
-    .then(result => {
-
-        return userDataModule.getUserID(result._id)
-
-    })
-    .then(result => {
-
-        if(result.length === 1){
-
-            return inviteModule.getGroupInvite(result[0].UserID)
-
-        }else{
-
-            var jsonpackage = {}
-            jsonpackage["messageName"] = "getGroupInvite"
-            jsonpackage["data"] = "you are not in the database"
-            res.send(JSON.stringify(jsonpackage))
-            return Promise,reject(0)
-
+const sendGroupInvite = async (req, res) => {
+    var jsonpackage = {}
+    jsonpackage["messageName"] = "sendGroupInvite"
+    jsonpackage["data"] = "Auth fail or database error"
+    try {
+        const token = req.cookies.token
+        const jwtAuthResult = await jwtModule.jwtVerify(token)
+        const getUserIDResult = await Promise.all([
+            userDataModule.getUserID(jwtAuthResult._id),
+            userDataModule.getUserID(req.params.userName)
+        ])
+        if (getUserIDResult[0].length !== 1 || getUserIDResult[1].length !== 1) {
+            throw new Error()
         }
+        const getGroupTestResult = await Promise.all([
+            inviteModule.getGroupInvite(getUserIDResult[1][0].UserID
+                , req.params.groupID),
 
-    })
-    .then(result => {
+            groupModule.getMember(getUserIDResult[1][0].UserID
+                , req.params.groupID)
+        ])
 
-        var jsonpackage = {}
-        jsonpackage["messageName"] = "getGroupInvite"
-        jsonpackage["data"] = result
-        res.send(JSON.stringify(jsonpackage))
-
-    })
-    .catch((err) => {
-
-        res.redirect('https://127.0.0.1:3000/OnlineText/login');
-
-    })
-
-}
-
-const deleteGroupInvite = (req, res) => {
-
-    const token = req.cookies.token;
-
-    jwtModule.jwtVerify(token)
-    .then(result => {
-        return userDataModule.getUserID(result._id)
-
-    })
-    .then(result => {
-
-        if(result.length === 1){
-
-            return inviteModule.deleteGroupInvite(result[0].UserID, req.params.groupID)
-
-        }else{
-
-            jsonpackage["messageName"] = "deleteGroupInvite"
-            jsonpackage["data"] = "you are not in the database"
-            res.send(JSON.stringify(jsonpackage))
-            return Promise,reject(0)
-
-        }   
-
-    })
-    .then(result => {
-
-        var jsonpackage = {}
-        jsonpackage["messageName"] = "deleteGroupInvite"
-        jsonpackage["data"] = "success"
-        res.send(JSON.stringify(jsonpackage))
-
-    })
-    .catch((err) => {
-
-        res.redirect('https://127.0.0.1:3000/OnlineText/login');
-
-
-    })
-
-}
-
-const postGroupInvite = (req, res) => {
-    const token = req.cookies.token;
-
-    jwtModule.jwtVerify(token)
-    .then((jwtVerify_result) => {
-
-        return Promise.all([
-                    userDataModule.getUserID(jwtVerify_result._id),
-                    userDataModule.getUserID(req.params.userName)
-                ])
-
-    })
-    .then(result => {
-        
-        if(result[0].length === 1 && result[1].length === 1){
-            
-            return inviteModule.postGroupInvite(result[1][0].UserID, req.params.groupID)
-
-        }else{
-
-            var jsonpackage = {}
-            jsonpackage["messageName"] = "postGroupInvite"
-            jsonpackage["data"] = "you are not in the database"
-            res.send(JSON.stringify(jsonpackage))
-            return Promise,reject(0)
-
-        }
-
-    })
-    .then(result => {
-
-        var jsonpackage = {}
-        jsonpackage["messageName"] = "postGroupInvite"
-        jsonpackage["data"] = "success"
-        res.send(JSON.stringify(jsonpackage))
-
-    })
-    .catch(err => {
-
-
-        if (err === "already member" || err === "already invite") {
-            var jsonpackage = {}
-            jsonpackage["messageName"] = "postGroupInvite"
-            jsonpackage["data"] = err
-            res.send(JSON.stringify(jsonpackage))
+        if (getGroupTestResult[1].length !== 0) {
+            jsonpackage["data"] = "already member"
+        } else if (getGroupTestResult[0].length !== 0) {
+            jsonpackage["data"] = "already invite"
         } else {
-            res.redirect('https://127.0.0.1:3000/OnlineText/login');
+            const postGroupInviteResult = await inviteModule.postGroupInvite(getUserIDResult[1][0].UserID, req.params.groupID)
+            jsonpackage["data"] = "success"
         }
-
-    })
-
+    } catch (err) {
+        jsonpackage["messageName"] = "error"
+    }
+    res.send(JSON.stringify(jsonpackage))
 }
 
 export default {
     getFriendInvite,
-    deleteFriendInvite,
-    postFriendInvite,
+    rejectFriendInvite,
+    snedFriendInvite,
     getGroupInvite,
-    deleteGroupInvite,
-    postGroupInvite
+    rejectGroupInvite,
+    sendGroupInvite
 }

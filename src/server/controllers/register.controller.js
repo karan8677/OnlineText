@@ -1,44 +1,30 @@
 import registerModule from '../modules/register.module'
 import loginModule from '../modules/login.module'
 
-const register = (req, res) => {
-    loginModule.checkAccount(req.params.userAccount, req.params.userPassword)
-        .then(result => {
-            if (result === "account not found") {
+const register = async (req, res) => {
+    var jsonpackage = {}
+    jsonpackage["messageName"] = "register"
+    jsonpackage["data"] = "Auth fail or database error"
+    try{
 
-                return registerModule.createAccount(req.params.userAccount, req.params.userPassword)
+        const checkAccountResult = await loginModule.checkAccount(req.params.userAccount, req.params.userPassword)
+        if (checkAccountResult === "account not found") {
 
-            } else if (result === "success" || result === "password incorrect") {
+            const createAccountResult = await registerModule.createAccount(req.params.userAccount, req.params.userPassword)
+            jsonpackage["data"] = checkAccountResult
+            
+        }else{
 
-                var jsonpackage = {}
-                jsonpackage["messageName"] = "register"
-                jsonpackage["data"] = "account exist"
-                res.send(JSON.stringify(jsonpackage))
-                return Promise.reject(0)
-            }
+            jsonpackage["data"] = "account exist"
+            
+        }
 
-        })
-        .then(result => {
+    }catch(err){
 
-            var jsonpackage = {}
-            jsonpackage["messageName"] = "register"
-            jsonpackage["data"] = "success"
-            res.send(JSON.stringify(jsonpackage))
-
-        })
-        .catch((err) => {
-
-            if (err !== 0) {
-
-                var jsonpackage = {}
-                jsonpackage["messageName"] = "error"
-                jsonpackage["data"] = err
-                res.send(JSON.stringify(jsonpackage))
-
-            }
-
-        })
-
+        jsonpackage["messageName"] = "error"
+        
+    }
+    res.send(JSON.stringify(jsonpackage))
 }
 
 export default {

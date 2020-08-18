@@ -1,45 +1,24 @@
 import loginModule from '../modules/login.module'
 import jwtModule from '../modules/jwt.module'
 
-const login = (req, res) => {
+const login = async (req, res) => {
+    var jsonpackage = {}
+    jsonpackage["messageName"] = "login"
+    jsonpackage["data"] = "Auth fail or database error"
+    try{
 
+        const loginResult = await loginModule.checkAccount(req.params.userAccount, req.params.userPassword)
+        if (loginResult === "success") {
+            const setCookieResult = await jwtModule.jwtSetCookie(req.params.userAccount, res)   
+        }
+        jsonpackage["data"] = loginResult
 
-    loginModule.checkAccount(req.params.userAccount, req.params.userPassword)
-        .then(result => {
-            if (result === "success") {
+    }catch(err){
 
-                return jwtModule.jwtSetCookie(req.params.userAccount, res)
-
-            } else {
-
-                var jsonpackage = {}
-                jsonpackage["messageName"] = "login"
-                jsonpackage["data"] = result
-                res.send(JSON.stringify(jsonpackage))
-                return Promise.reject(0)
-
-            }
-        })
-        .then(result => {
-
-            var jsonpackage = {}
-            jsonpackage["messageName"] = "login"
-            jsonpackage["data"] = "success"
-            res.send(JSON.stringify(jsonpackage))
-
-        })
-        .catch((err) => {
-
-            if (err !== 0) {
-
-                var jsonpackage = {}
-                jsonpackage["messageName"] = "error"
-                jsonpackage["data"] = err
-                res.send(JSON.stringify(jsonpackage))
-
-            }
-        })
-
+        jsonpackage["messageName"] = "error"
+        
+    }
+    res.send(JSON.stringify(jsonpackage))
 }
 export default {
     login

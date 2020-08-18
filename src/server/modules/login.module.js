@@ -26,7 +26,7 @@ const checkAccount = (userAccount, userPassword) => {
         }).catch(err => {
             if (err) {
 
-                console.error('SQL error:', err)
+                console.error('checkAccount error:', err)
                 reject(err)
 
             }
