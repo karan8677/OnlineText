@@ -24,12 +24,10 @@ const checkAccount = (userAccount, userPassword) => {
             }
 
         }).catch(err => {
-            if (err) {
 
-                console.error('checkAccount error:', err)
-                reject(err)
+            console.error('checkAccount error:', err)
+            reject(err)
 
-            }
         })
     })
 }

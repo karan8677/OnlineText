@@ -1,138 +1,137 @@
 import mysql from './mysql.module'
 
-const saveGroupMessage = (groupID, fromUserID, message) => {
+const saveGroupMessage = (groupID, fromUserID, message, time) => {
 
     return new Promise((resolve, reject) => {
-
-        var today = new Date();
-        var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-        var dateTime = date + ' ' + time;
-
         var sqlCommand = "INSERT INTO GroupMessage(GroupID, FromUserID, Message, Time) VALUES('" +
             groupID + "','" +
             fromUserID + "','" +
             message  + "','" +
-            dateTime+ "')"
+            time+ "')"
 
         mysql.mysqlCommand(sqlCommand)
         .then(result => {
             resolve(result)
         })
         .catch(err => {
-            console.error('SQL error:', err)
+            console.error('saveGroupMessage error:', err)
             reject(err)
         })
     
     })
 }
 
-const getGroupPreloadMessage = (groupID) => {
+const getGroupMessage = (groupID, MessageID) => {
 
     return new Promise((resolve, reject) => {
 
-        connectionPool.getConnection((connectionError, connection) => {
-            if (connectionError) {
-                reject(connectionError)
-            } else {
-                var sqlCommand = "SELECT Account.UserAccount, GroupMessage.Message, GroupMessage.Time " +
-                    "FROM GroupMessage " +
+        var upper = Number(MessageID) + 50;
+        var lower = Number(MessageID);
+         
+        var sqlCommand = "SELECT Account.UserAccount AS fromUserName, "+
+                        "GroupMessage.Message AS message, "+
+                        "GroupMessage.Time AS time, " +
+                        "GroupMessage.GroupID AS groupID " +
+            "FROM GroupMessage " +
 
-                    "INNER JOIN Account " +
-                    "ON Account.UserID = GroupMessage.FromUserID " +
+            "INNER JOIN Account " +
+            "ON Account.UserID = GroupMessage.FromUserID " +
 
-                    "WHERE GroupMessage.GroupID = " +
-                    groupID +
+            "WHERE GroupMessage.GroupID = " +
+            groupID +
+            " ORDER BY GroupMessage.MessageID limit " + MessageID + "," + (MessageID+50)
 
-                    " ORDER BY GroupMessage.MessageID " +
-                    "limit 50";
+        mysql.mysqlCommand(sqlCommand)
+        .then(result =>{
 
-                connection.query(sqlCommand, function (err, result) {
+            resolve(result)
 
-                    if (err) {
+        }).catch(err =>{
 
-                        console.error('SQL error:', err)
-                        reject(err)
+            console.error('getGroupMessage error:', err)
+            reject(err)
 
-                    } else {
-                        resolve(result);
-
-                    }
-                })
-                connection.release()
-            }
         })
 
     })
 }
 
-const saveFriendMessage = (friendID, fromUserID, message) => {
+const saveFriendMessage = (friendID, fromUserID, message, time) => {
 
     return new Promise((resolve, reject) => {
-
-        var today = new Date();
-        var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-        var dateTime = date + ' ' + time;
 
         var sqlCommand = "INSERT INTO FriendMessage(FriendID, FromUserID, Message, Time) VALUES('" +
             friendID + "','" +
             fromUserID + "','" +
             message + "','" +
-            dateTime + "')"
+            time + "')"
 
         mysql.mysqlCommand(sqlCommand)
         .then(result => {
             resolve(result)
         })
         .catch(err => {
-            console.error('SQL error:', err)
+            console.error('saveFriendMessage error:', err)
             reject(err)
         })
 
     })
 }
 
-const getFriendPreloadMessage = (friendID) => {
+const getFriendMessage = (friendID, messageID) => {
 
     return new Promise((resolve, reject) => {
 
-        connectionPool.getConnection((connectionError, connection) => {
-            if (connectionError) {
-                reject(connectionError)
-            } else {
-                var sqlCommand = "SELECT Account.UserAccount, FriendMessage.Message, FriendMessage.Time " +
-                    "FROM FriendMessage " +
-                    "INNER JOIN Account  " +
-                    "ON FriendMessage.FromUserID = Account.UserID " +
-                    "WHERE FriendMessage.FriendID = " +
-                    friendID +
+        var sqlCommand = "SELECT Account.UserAccount AS fromUserName, "+
+        "FriendMessage.Message AS message, " +
+            "FriendMessage.Time AS time, " +
+            "FriendMessage.FriendID AS friendID " +
+            "FROM FriendMessage " +
+            "INNER JOIN Account  " +
+            "ON FriendMessage.FromUserID = Account.UserID " +
+            "WHERE FriendMessage.FriendID = " +
+            friendID +
+            " ORDER BY FriendMessage.MessageID limit " + messageID + "," + (messageID + 50)
 
-                    " ORDER BY FriendMessage.MessageID " +
-                    "limit 50";
+        mysql.mysqlCommand(sqlCommand).then(result => {
+            resolve(result);
 
-                connection.query(sqlCommand, function (err, result) {
+        }).catch(err => {
 
-                    if (err) {
+            console.error('getFriendMessage error:', err)
+            reject(err)
 
-                        console.error('SQL error:', err)
-                        reject(err)
-
-                    } else {
-                        resolve(result);
-
-                    }
-                })
-                connection.release()
-            }
         })
+    })
+}
 
+
+
+
+const getFriend = (friendID) => {
+
+    return new Promise((resolve, reject) => {
+
+        var sqlCommand = "SELECT * FROM FriendList " +
+            "WHERE FriendList.FriendID = " + friendID
+             
+        mysql.mysqlCommand(sqlCommand).then(result => {
+            resolve(result);
+
+        }).catch(err => {
+
+            console.error('getFriendMessage error:', err)
+            reject(err)
+
+        })
     })
 }
 
 export default {
     saveGroupMessage,
-    getGroupPreloadMessage,
+    getGroupMessage,
     saveFriendMessage,
-    getFriendPreloadMessage
+    getFriendMessage,
+    
+    getFriend
 }

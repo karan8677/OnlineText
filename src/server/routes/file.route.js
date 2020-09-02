@@ -6,7 +6,7 @@ import userDataCtrl from '../controllers/userData.controller'
 import loginCtrl from '../controllers/login.controller'
 import registerCtrl from '../controllers/register.controller'
 import imgmodules from '../modules/image.module'
-import message from '../controllers/message.controller'
+import messageCtrl from '../controllers/message.controller'
 import fs from 'fs'
 
 
@@ -130,12 +130,14 @@ router.delete('/friendInvite/:userID', function (req, res) {
 
 
 // ===========================================            oldmessage               =============================================
-router.get('/oldMessage/:groupID', function (req, res) {
-
-
+router.get('/oldGroupMessage/:groupID/:messageID', function (req, res) {
+	
+	messageCtrl.getOldGroupMessage(req, res)
 
 })
-router.get('/friendOldMessage/:userID', function (req, res) {
+router.get('/oldFriendMessage/:friendID/:messageID', function (req, res) {
+
+	messageCtrl.getOldFriendMessage(req, res)
 
 })
 

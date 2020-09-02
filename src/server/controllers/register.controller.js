@@ -11,7 +11,7 @@ const register = async (req, res) => {
         if (checkAccountResult === "account not found") {
 
             const createAccountResult = await registerModule.createAccount(req.params.userAccount, req.params.userPassword)
-            jsonpackage["data"] = checkAccountResult
+            jsonpackage["data"] = "success"
             
         }else{
 

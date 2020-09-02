@@ -1,0 +1,82 @@
+doctype html
+html(lang='zh-Hant-TW')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0, shrink-to-fit=no')
+    meta(http-equiv='X-UA-Compatible', content='ie=edge')
+    title 登入
+    // Bootstrap CSS
+    link(rel='stylesheet', href='/bootstrap-4.0.0-dist/css/bootstrap.min.css')
+    script(src='https://kit.fontawesome.com/f46675eb01.js', crossorigin='anonymous')
+    // whole background
+    style(type='text/css').
+      html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      }
+      body {
+      background-image: url("/images/login_background.png");
+      background-repeat: no-repeat;
+      background-size: 1920px 1080px;
+      height: 100%;
+      }
+      .col-center-block {
+      float: none;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 30%;
+      text-align: center;
+      max-width: 500px;
+      background-color: rgb(58, 58, 58);
+      }
+      .edit {
+      margin-top: 5px;
+      }
+      .textcolor {
+      color: white;
+      }
+  body
+    .container
+      .row.row-centerd
+        .col-xs-6.col-md-4.col-center-block
+          h1.textcolor 歡迎登入
+          .form-group
+            label.textcolor(for='InputEmail') 電子郵件
+            input#InputEmail_login.form-control(type='email', name='user_account', placeholder='請輸入信箱')
+          .form-group
+            label.textcolor(for='InputPassword') 密碼
+            input#InputPassword_login.form-control(type='password', name='user_password', placeholder='請輸入密碼')
+          div
+            button#login_check.btn.btn-default(name='login_check') 登入
+          div
+            button#register.btn.btn-default(name='register') 註冊
+          label#error.textcolor
+    script(src='/bootstrap-4.0.0-dist/js/jquery/dist/jquery.min.js')
+    script(src='/bootstrap-4.0.0-dist/js/popper.js/dist/popper.min.js')
+    script(src='/bootstrap-4.0.0-dist/js/bootstrap.min.js')
+    script.
+      document.getElementById('login_check').onclick = function () {
+      if(document.getElementById('InputEmail_login').value == '' || document.getElementById('InputPassword_login').value == ''){
+      document.getElementById('error').innerHTML = "帳號密碼不可以為空"
+      }else{
+      var xhr_login = new XMLHttpRequest()
+      xhr_login.open("GET", "file/login/" + document.getElementById('InputEmail_login').value + "/" + document.getElementById('InputPassword_login').value);
+      xhr_login.onload = function () {
+      var onLoadMessage = JSON.parse(xhr_login.responseText)
+      console.log(onLoadMessage)
+      if (onLoadMessage.messageName === "login") {
+      if (onLoadMessage.data === "success") {
+      location.href = ('https://127.0.0.1:3000/OnlineText/mainPage');
+      } else{
+      document.getElementById('error').innerHTML = onLoadMessage.data
+      }
+      }
+      }
+      xhr_login.send();
+      }
+      }
+      document.getElementById('register').onclick = function () {
+      location.href = ('https://127.0.0.1:3000/OnlineText/register');
+      }

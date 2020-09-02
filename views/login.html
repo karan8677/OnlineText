@@ -1,125 +1,91 @@
 <!DOCTYPE html>
-<html lang="zh-Hant-TW">
+<html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>登入</title>
-    <!--Bootstrap CSS-->
-    <link rel="stylesheet" href="/bootstrap-4.0.0-dist/css/bootstrap.min.css">
-    <script src="https://kit.fontawesome.com/f46675eb01.js" crossorigin="anonymous"></script>
-
-    <!--whole background-->
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
     <style type="text/css">
         html {
             margin: 0;
             padding: 0;
             height: 100%;
         }
-
         body {
-            background-image: url("/images/login_background.png");
+            margin:0px;
+            padding:0px;   
+            /* background-color: #3C3C3C;  */
+            background-image: url("/images/login_background_m.jpg");
             background-repeat: no-repeat;
-            background-size: 1920px 1080px;
-            height: 100%;
+            background-size:cover;
+            height:100%;
+            width:100%;
+            background-attachment:fixed;
+            background-position:center;
+        }
+        .font {
+            color : #9D9D9D	
+        }
+        .error {
+            color: red
+        }
+        .loginBox {
+            margin-right: none;
+            margin-left: 250px;     
+            padding-right:30px;
+            padding-left:30px;
+            padding-top:30px;
+            padding-bottom:20px;
+            border-radius:.9rem!important;
+            width: 485px;       
+            box-shadow: 0 10px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);   
+        }
+        .imageBox{
+            margin-right: none;
+            margin-left: none;  
+        }
+        @media (min-width: 1200px){
+ 
+        }
+        @media (max-width: 1200px){
+
+        }
+        @media (max-width: 992px){
+
+        }
+        @media (max-width: 985px){
+            .loginBox {
+                margin-right: auto;
+                margin-left: auto;            
+            }
+        }
+        @media (max-width: 768px){
+
+        }
+        @media (max-width: 576px){
+            
+            .imageBox{
+                justify-content: center!important;
+            }
         }
 
-        .col-center-block {
-            float: none;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            margin-top: 30%;
-            text-align: center;
-            max-width: 500px;
-            background-color: rgb(58, 58, 58);
-        }
-
-        .edit {
-            margin-top: 5px;
-        }
-
-        .textcolor {
-            color: white;
-        }
+        
     </style>
-
 </head>
 
 <body>
-    <div class="container">
-        <div class="row row-centerd">
-            <div class="col-xs-6 col-md-4 col-center-block">
-                <h1 class="textcolor">歡迎登入</h1>
-
-                <div class="form-group">
-                    <label for="InputEmail" class="textcolor">電子郵件</label>
-                    <input type="email" class="form-control" id="InputEmail_login" name="user_account"
-                        placeholder="請輸入信箱">
-                </div>
-
-                <div class="form-group">
-                    <label for="InputPassword" class="textcolor">密碼</label>
-                    <input type="password" class="form-control" id="InputPassword_login" name="user_password"
-                        placeholder="請輸入密碼">
-                </div>
-
-                <div>
-                    <button class="btn btn-default" id="login_check" name="login_check">登入</button>
-                </div>
-
-                <div>
-                    <button class="btn btn-default" id="register" name="register">註冊</button>
-                </div>
-                <label id="error" class="textcolor"></label>
-
-            </div>
-        </div>
+    <div class="d-flex justify-content-start imageBox">
+        <img src="/images/MainIcon.png" class="center-block">
     </div>
-    <script src="/bootstrap-4.0.0-dist/js/jquery/dist/jquery.min.js"></script>
-    <script src="/bootstrap-4.0.0-dist/js/popper.js/dist/popper.min.js"></script>
-    <script src="/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
-
-    <script>
-        document.getElementById('login_check').onclick = function () {
-            if(document.getElementById('InputEmail_login').value == '' || document.getElementById('InputPassword_login').value == ''){
-                
-                document.getElementById('error').innerHTML = "帳號密碼不可以為空"
-           
-            }else{
-
-                var xhr_login = new XMLHttpRequest()
-
-                xhr_login.open("GET", "file/login/" + document.getElementById('InputEmail_login').value + "/" + document.getElementById('InputPassword_login').value);
-
-                xhr_login.onload = function () {
-                    var onLoadMessage = JSON.parse(xhr_login.responseText)
-                    console.log(onLoadMessage)
-                    if (onLoadMessage.messageName === "login") {
-                        
-                        if (onLoadMessage.data === "success") {
-
-                            location.href = ('https://127.0.0.1:3000/OnlineText/mainPage');
-
-                        } else{
-
-                            document.getElementById('error').innerHTML = onLoadMessage.data
-
-                        }
-                    }
-                    
-
-                }
-
-                xhr_login.send();
-            }
-        }
-        document.getElementById('register').onclick = function () {
-            location.href = ('https://127.0.0.1:3000/OnlineText/register');
-        }
-    </script>
-
+    <div class="d-flex justify-content-start"  style="padding-top:8%" id = "loginBox" >
+    </div>
+    <script src="/reactjs/Login.js"></script>
 </body>
 
 </html>

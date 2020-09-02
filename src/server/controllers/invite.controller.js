@@ -117,7 +117,6 @@ const getGroupInvite = async (req, res) => {
 }
 
 const rejectGroupInvite = async (req, res) => {
-
     var jsonpackage = {}
     jsonpackage["messageName"] = "rejectGroupInvite"
     jsonpackage["data"] = "Auth fail or database error"
@@ -133,6 +132,7 @@ const rejectGroupInvite = async (req, res) => {
     }catch(err){
         jsonpackage["messageName"] = "error"
     }
+
     res.send(JSON.stringify(jsonpackage))
     
 }

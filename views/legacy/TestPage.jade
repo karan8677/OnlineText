@@ -14,13 +14,47 @@ html(lang='en')
     // <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
     script(src='https://code.jquery.com/jquery-3.4.1.min.js')
     script(type='text/javascript').
+
+      let ws = new WebSocket('wss://127.0.0.1:3000')
+      ws.onopen = () => {
+        userData.send()
+      }
+      ws.onmessage = (data) => {
+      var parseData = JSON.parse(data.data)
+      switch (parseData.messageName) {
+      case "userID":
+      //- var messagePackage = {}
+      //- var dataPackage ={}
+      //- messagePackage["messageName"] = "groupMessage"
+      //- dataPackage["message"] = "websocket_send_test"
+      //- dataPackage["groupID"] = 1
+      //- messagePackage["data"] = dataPackage
+      //- ws.send(JSON.stringify(messagePackage))
+      var messagePackage = {}
+      var dataPackage ={}
+      messagePackage["messageName"] = "friendMessage"
+      dataPackage["message"] = "websocket_send_test_friend"
+      dataPackage["friendID"] = 1
+      messagePackage["data"] = dataPackage
+      ws.send(JSON.stringify(messagePackage))
+      break;
+      default:
+        console.log(parseData)
+      break;
+      }
+      }
+
       var userData = new XMLHttpRequest()
       userData.open("GET", "file/userData")
       userData.onload = function () {
       let onLoadMessage = JSON.parse(userData.responseText)
       console.log(onLoadMessage)
-      };
-      userData.send()
+      
+      var messagePackage = {}
+      messagePackage["messageName"] = "userAccount"
+      messagePackage["data"] = "123@gmail.com"
+      ws.send(JSON.stringify(messagePackage))
+      }
       //- var createGroup = new XMLHttpRequest()  //(創造群組)
       //- createGroup.open("POST", "file/createGroup/Group test")
       //- createGroup.onload = function(){
@@ -119,18 +153,19 @@ html(lang='en')
       //-   console.log(onLoadMessage)
       //- }
       //- deleteFrienInvite.send()
-      // var getOldGroupMessage = new XMLHttpRequest() //(取得群組的舊訊息)
-      // getOldGroupMessage.open("GET", "file/oldGroupMessage/:GroupID")
-      // getOldGroupMessage.onload = function(){
-      //   let onLoadMessage = JSON.parse(getOldGroupMessage.responseText)
-      //   console.log(onLoadMessage)
-      // }
-      // getOldGroupMessage.send()
-      // var getOldFriendMessage = new XMLHttpRequest() //(取得好友的舊訊息)
-      // getOldFriendMessage.open("GET", "file/oldFriendMessage/:friendID")
-      // getOldFriendMessage.onload = function(){
-      //   let onLoadMessage = JSON.parse(getOldFriendMessage.responseText)
-      //   console.log(onLoadMessage)
-      // }
-      // getOldFriendMessage.send()
+      //- var getOldGroupMessage = new XMLHttpRequest() //(取得群組的舊訊息)
+      //- getOldGroupMessage.open("GET", "file/oldGroupMessage/1/0")
+      //- getOldGroupMessage.onload = function(){
+      //-   let onLoadMessage = JSON.parse(getOldGroupMessage.responseText)
+      //-   console.log(onLoadMessage)
+      //- }
+      //- getOldGroupMessage.send()
+      //- var getOldFriendMessage = new XMLHttpRequest() //(取得好友的舊訊息)
+      //- getOldFriendMessage.open("GET", "file/oldFriendMessage/1/0")
+      //- getOldFriendMessage.onload = function(){
+      //-   let onLoadMessage = JSON.parse(getOldFriendMessage.responseText)
+      //-   console.log(onLoadMessage)
+      //- }
+      //- getOldFriendMessage.send()
+      
     h1 This is a testing page

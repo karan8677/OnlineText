@@ -22,7 +22,7 @@ const getUserData = (userAccount) => {
 
     return new Promise((resolve, reject) => {
 
-        var sqlCommand = "SELECT UserID AS userName , UserAccount AS userID FROM Account WHERE UserAccount = '" + userAccount + "'"
+        var sqlCommand = "SELECT UserID AS userID , UserAccount AS userName FROM Account WHERE UserAccount = '" + userAccount + "'"
         
         mysql.mysqlCommand(sqlCommand)
         .then(result => {

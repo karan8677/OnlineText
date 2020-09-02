@@ -1,14 +1,15 @@
 doctype html
-html(lang='zh-Hant-TW')
+html(lang='en')
   head
-    meta(charset='UTF-8')
-    meta(name='viewport', content='width=device-width, initial-scale=1.0, shrink-to-fit=no')
-    meta(http-equiv='X-UA-Compatible', content='ie=edge')
-    title 登入
-    // Bootstrap CSS
-    link(rel='stylesheet', href='/bootstrap-4.0.0-dist/css/bootstrap.min.css')
-    script(src='https://kit.fontawesome.com/f46675eb01.js', crossorigin='anonymous')
-    // whole background
+    title Bootstrap Example
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css')
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js')
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js')
+    script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js')
+    script(src='https://unpkg.com/react@16/umd/react.development.js', crossorigin='')
+    script(src='https://unpkg.com/react-dom@16/umd/react-dom.development.js', crossorigin='')
     style(type='text/css').
       html {
       margin: 0;
@@ -16,67 +17,60 @@ html(lang='zh-Hant-TW')
       height: 100%;
       }
       body {
-      background-image: url("/images/login_background.png");
+      margin:0px;
+      padding:0px;
+      /* background-color: #3C3C3C;  */
+      background-image: url("/images/login_background_m.jpg");
       background-repeat: no-repeat;
-      background-size: 1920px 1080px;
-      height: 100%;
+      background-size:cover;
+      height:100%;
+      width:100%;
+      background-attachment:fixed;
+      background-position:center;
       }
-      .col-center-block {
-      float: none;
-      display: block;
-      margin-left: auto;
+      .font {
+      color : #9D9D9D
+      }
+      .error {
+      color: red
+      }
+      .loginBox {
+      margin-right: none;
+      margin-left: 250px;
+      padding-right:30px;
+      padding-left:30px;
+      padding-top:30px;
+      padding-bottom:20px;
+      border-radius:.9rem!important;
+      width: 485px;
+      box-shadow: 0 10px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      }
+      .imageBox{
+      margin-right: none;
+      margin-left: none;
+      }
+      @media (min-width: 1200px){
+      }
+      @media (max-width: 1200px){
+      }
+      @media (max-width: 992px){
+      }
+      @media (max-width: 985px){
+      .loginBox {
       margin-right: auto;
-      margin-top: 30%;
-      text-align: center;
-      max-width: 500px;
-      background-color: rgb(58, 58, 58);
+      margin-left: auto;
       }
-      .edit {
-      margin-top: 5px;
       }
-      .textcolor {
-      color: white;
+      @media (max-width: 768px){
       }
+      @media (max-width: 576px){
+      .imageBox{
+      justify-content: center!important;
+      }
+      }
+    script(sec:='login.js').
   body
-    .container
-      .row.row-centerd
-        .col-xs-6.col-md-4.col-center-block
-          h1.textcolor 歡迎登入
-          .form-group
-            label.textcolor(for='InputEmail') 電子郵件
-            input#InputEmail_login.form-control(type='email', name='user_account', placeholder='請輸入信箱')
-          .form-group
-            label.textcolor(for='InputPassword') 密碼
-            input#InputPassword_login.form-control(type='password', name='user_password', placeholder='請輸入密碼')
-          div
-            button#login_check.btn.btn-default(name='login_check') 登入
-          div
-            button#register.btn.btn-default(name='register') 註冊
-          label#error.textcolor
-    script(src='/bootstrap-4.0.0-dist/js/jquery/dist/jquery.min.js')
-    script(src='/bootstrap-4.0.0-dist/js/popper.js/dist/popper.min.js')
-    script(src='/bootstrap-4.0.0-dist/js/bootstrap.min.js')
-    script.
-      document.getElementById('login_check').onclick = function () {
-      if(document.getElementById('InputEmail_login').value == '' || document.getElementById('InputPassword_login').value == ''){
-      document.getElementById('error').innerHTML = "帳號密碼不可以為空"
-      }else{
-      var xhr_login = new XMLHttpRequest()
-      xhr_login.open("GET", "file/login/" + document.getElementById('InputEmail_login').value + "/" + document.getElementById('InputPassword_login').value);
-      xhr_login.onload = function () {
-      var onLoadMessage = JSON.parse(xhr_login.responseText)
-      console.log(onLoadMessage)
-      if (onLoadMessage.messageName === "login") {
-      if (onLoadMessage.data === "success") {
-      location.href = ('https://127.0.0.1:3000/OnlineText/mainPage');
-      } else{
-      document.getElementById('error').innerHTML = onLoadMessage.data
-      }
-      }
-      }
-      xhr_login.send();
-      }
-      }
-      document.getElementById('register').onclick = function () {
-      location.href = ('https://127.0.0.1:3000/OnlineText/register');
-      }
+    .d-flex.justify-content-start.imageBox
+      img.center-block(src='/images/MainIcon.png')
+    #loginBox.d-flex.justify-content-start(style='padding-top:8%')
+    script(src='/reactjs/Login.js')

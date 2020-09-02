@@ -1,0 +1,288 @@
+html,body{
+    position:absolute;
+    height: 100%;
+    width: 100%;
+    margin: 0; 
+    padding: 0;
+    background-color: #272727; 
+    
+}
+.error {
+    color: red
+}
+.flexColumn{
+    display: flex;
+    flex-flow: column nowrap;
+}
+.flexRow{
+    display: flex;
+}
+
+
+/********************** groupListAndHomePageContainer **********************/
+.groupListAndHomePageContainer {
+    flex-basis: 80px;
+    height: 100%;
+}
+/********************** selfData **********************/
+
+.selfData {
+    flex-basis: 80px;
+}
+
+/**********************Group icon setting **********************/
+.iconPadding {
+    padding:10px;
+}
+.iconTrigger:hover .groupIconContainer {
+    border-radius:50%!important;
+}
+a.active .groupIconContainer{
+    border-radius:50%!important;
+}
+.groupIconContainer {
+  border-radius: .25rem!important;
+  transition: .2s ease;
+  max-height: 100%;  
+  max-width: 100%; 
+  background-color: blue;
+}
+
+/********************** groupList **********************/
+.groupList::-webkit-scrollbar { width: 0 !important }
+.groupList {
+    flex-basis:0;
+    flex-grow: 1;
+    overflow-y: scroll;
+}
+
+
+
+
+
+
+
+/********************** messageContent **********************/
+.messageContent {
+    flex-basis: 0;
+    flex-grow: 1;
+    height: 100%; 
+    min-width:0px;
+}
+
+
+
+
+/********************** setBar **********************/
+
+.setBar{
+    flex-basis: 80px;
+    background-color:#3C3C3C;
+    border-bottom:1px solid black;
+    border-top-left-radius:.9rem!important;
+}
+.titleContainer{
+    position: relative;
+    flex-basis: 0;
+    flex-grow: 1;
+    height: 100%;
+    padding-left: 20px;
+}
+.titleText{
+    position: absolute;
+    top: 50%;
+    font-size: 30px;
+    -webkit-transform: translate( 0, -50%);
+    -ms-transform: translate(0, -50%);
+    transform: translate(0, -50%);
+    width: 100%;
+    color: black;
+    text-overflow:ellipsis;
+    overflow:hidden;
+}
+.inputContainer{
+    flex-basis: 300px;
+    padding: 10px;
+    margin: auto;
+}
+.input{
+    background-color: #3C3C3C!important;
+    border-color: black;
+    border-radius: 0.9rem!important;
+    color: 	#ADADAD!important;
+}
+.sendContainer{
+    flex-basis: 150px;
+    margin: auto;
+    text-align: center;
+}
+
+
+
+
+/********************** messageBoard **********************/
+.message {
+    flex-basis: 0;
+    flex-grow: 1;
+    background-color:#3C3C3C; 
+    border-bottom-left-radius:.9rem!important;
+}
+.messageBoard::-webkit-scrollbar { width: 0 !important }
+.messageBoard{
+    overflow-y: scroll;
+    flex-grow: 1;
+    flex-basis: 0;
+    border-bottom:1px solid black;
+}
+.messageContainer{
+    width: 100%;
+    height: fit-content;
+    padding: 10px;
+}
+.messageImgContaniner{
+    flex-basis: 60px;
+    padding: 10px;
+}
+.messageImg {
+  max-height: 100%;  
+  max-width: 100%; 
+  border-radius: 50%!important;
+  background-color: blue;
+}
+.messageFromAndArtical{
+    flex-basis: 0;
+    flex-grow: 1;
+    color: #ADADAD;
+    
+}
+.messageFrom{
+    margin-top: 10px;
+    flex-basis: 20px;
+}
+.messageArtical{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    flex-basis: 0;
+    flex-grow: 1;
+}
+
+
+/********************** messageInputAndMessageSendContainer **********************/
+.messageInputAndMessageSendContainer {
+    flex-basis: 80px;
+    padding: 10px;
+}
+.messageInputContainer{
+    flex-basis: 0px;
+    flex-grow: 1;
+    margin: auto;
+}
+.MessageSendContainer{
+    flex-basis: 150px;
+    margin: auto;
+    text-align: center;
+}
+
+
+/********************** Invite Bar **********************/
+.inviteMessage::-webkit-scrollbar { width: 0 !important }
+.inviteBar {
+    flex-basis: 160px;
+    background-color:#5B5B5B;
+    height: 100%;
+}
+.inviteMessage {
+    flex-basis: 0px;
+    flex-grow: 1;
+    overflow-y: scroll;
+}
+
+/********************** Invite component **********************/
+
+.inviteContainer {
+    height:80px;
+    background-color:#5B5B5B;
+    border-bottom:1px solid black;
+    padding: 10px;
+}
+.text::-webkit-scrollbar { width: 0 !important }
+.text {
+    flex-basis: 0;
+    flex-grow: 0.75;
+    text-align: center;
+    color: white;
+    font-size: 15px;
+    word-wrap:break-word;
+    overflow-y: scroll;
+}
+.checkBoxContainer {
+    flex-basis: 0;
+    flex-grow: 0.5;
+    color: white;
+    font-size: 15px;
+    margin: auto;
+    padding-top: 5px;
+}
+.checkBox{
+    margin-right: 10px;
+    margin-left: 10px;
+    width:20px;
+    height: 100%;
+}
+.checkTrigger:hover .checkIcon {
+    background-color: blue;
+}
+.checkIcon {
+  border-radius: 50%!important;
+  border-color: black;
+  border-style: solid;
+  max-height: 100%;  
+  max-width: 100%; 
+}
+
+
+
+
+
+@media (min-width: 1200px) {
+
+}
+@media (max-width: 1200px) {
+
+}
+@media (max-width: 992px) {
+
+}
+@media (max-width: 985px) {
+
+}
+@media (max-width: 940px) {
+    .setBar{
+        max-height: 160px;
+        min-height: 160px;
+    }
+    .setBarColumn{
+        flex-flow: column nowrap;
+    }
+    .titleContainer{
+        flex-basis: 0;
+        flex-grow: 0.4;   
+        padding-left: 0px;
+    }
+    .titleText{
+        text-align: center;
+    }
+    .inputContainer{
+     flex-basis: 0;
+     flex-grow: 0.3;   
+    }
+    .sendContainer{
+     flex-basis: 0;
+     flex-grow: 0.3;   
+    }
+}
+@media (max-width: 768px) {
+
+}
+@media (max-width: 576px) {
+}

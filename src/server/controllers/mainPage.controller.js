@@ -5,7 +5,7 @@ const mainPageGet = (req, res) => {
     const token = req.cookies.token;
     jwtModule.jwtVerify(token).then((jwtVerify_result) => {
 
-        res.render('TestPage')
+        res.render('mainPage')
 
     }).catch((err) => {
         res.redirect('https://127.0.0.1:3000/OnlineText/login');

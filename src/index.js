@@ -62,96 +62,96 @@ wss.on('connection', ws => {
                 .then(result => {
 
                     ws.account = jsonData.data
-                    ws.id = result.UserID
+                    ws.id = result[0].UserID
+                    var messagePackage = {}
+                    messagePackage["messageName"] = "userID"
+                    messagePackage["data"] = result[0].UserID
+                    ws.send(JSON.stringify(messagePackage))
 
                 }).catch(err => {
-                    
-                    res.send(err)
-                
+                    ws.send(JSON.stringify(err))
                 })
 
                 break
 
             case "groupMessage":
+                var today = new Date();
+                var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate()
+                var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds()
+                var dateTime = date + ' ' + time
 
+                jsonData.data.time = dateTime
                 jsonData.data.fromUserID = ws.id
-                jsonData.data.fromUserAccount = ws.account
-                messageCtrl.saveMessage(jsonData.data)
-                .then(saveMessage_result => {
+                jsonData.data.fromUserAccount = ws.account 
+                var messagePackage = {}
+                messagePackage["fromUserName"] = jsonData.data.fromUserAccount
+                messagePackage["groupID"] = jsonData.data.groupID
+                messagePackage["message"] = jsonData.data.message
+                messagePackage["time"] = dateTime
+                messageCtrl.saveGroupMessage(jsonData.data, messagePackage)
+                .then(saveGroupMessageResult => {
 
-                    return messageCtrl.getMember(jsonData.data.groupName)
+                    return messageCtrl.getGroupMember(jsonData.data.groupID)
 
                 })
-                .then(result => {
-
-                    const client = redis.createClient()
-                    client.on('connect', () => {
-
-                        console.log('Redis client connected')
-
-                    })
-                    let jsonPackage = {}
-                    jsonPackage["UserAccount"] = jsonData.data.fromUserAccount
-                    jsonPackage["Message"] = jsonData.data.message
-
-
-                    client.RPUSH(jsonData.data.groupID + "_groupMessage", JSON.stringify(jsonPackage));
-                    client.expire(jsonData.data.groupID + "_groupMessage", 1000);
+                .then(getGroupMemberResult => {
+                    var sendPackage = {}
+                    sendPackage["messageName"] = "groupMessage"
+                    sendPackage["data"] = [messagePackage]
                     for (var x = 0; x < clients.length; x++) {
 
-                        if (result.some(item => item.UserID === clients[x].id)) {
+                        if (getGroupMemberResult.data.some(item => item.UserID === clients[x].id)) {
 
-                            clients[x].send(JSON.stringify(jsonData))
+                            clients[x].send(JSON.stringify(sendPackage))
 
                         }
 
                     }
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+            break
 
+            case "friendMessage":
+                var today = new Date();
+                var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate()
+                var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds()
+                var dateTime = date + ' ' + time
+                jsonData.data.time = dateTime
+                jsonData.data.fromUserID = ws.id
+                jsonData.data.fromUserAccount = ws.account
+                var messagePackage = {}
+                messagePackage["fromUserName"] = jsonData.data.fromUserAccount
+                messagePackage["friendID"] = jsonData.data.friendID
+                messagePackage["message"] = jsonData.data.message
+                messagePackage["time"] = dateTime
+
+                messageCtrl.saveFriendMessage(jsonData.data, messagePackage)
+                .then(saveMessage_result => {
+
+                    return messageCtrl.getFriend(jsonData.data.friendID, jsonData.data.fromUserID)
+
+                })
+                .then(getFriendResult => {
+                    var sendPackage={}
+                    sendPackage["messageName"] = "friendMessage"
+                    sendPackage["data"] = [messagePackage]
+                    for (var x = 0; x < clients.length; x++) {
+
+                        if (getFriendResult.data.some(item => getFriendResult.data[0].UserID1 === clients[x].id)  || 
+                            getFriendResult.data.some(item => getFriendResult.data[0].UserID2 === clients[x].id)) {
+
+                            clients[x].send(JSON.stringify(sendPackage))
+
+                        }
+
+                    }
                 })
                 .catch((err) => {
                     console.log(err)
                 })
                 break
-
-            // case "friendMessage":
-
-            //     jsonData.data.fromUserID = ws.id
-            //     jsonData.data.fromUserAccount = ws.account
-            //     messageCtrl.saveMessage(jsonData.data)
-            //     .then(saveMessage_result => {
-
-            //         return messageCtrl.getMember(jsonData.data.groupName)
-
-            //     })
-            //     .then(result => {
-
-            //         const client = redis.createClient()
-            //         client.on('connect', () => {
-
-            //             console.log('Redis client connected')
-
-            //         })
-            //         let jsonPackage = {}
-            //         jsonPackage["UserAccount"] = jsonData.data.fromUserAccount
-            //         jsonPackage["Message"] = jsonData.data.message
-
-
-            //         client.RPUSH(jsonData.data.friendID + "_friendMessage", JSON.stringify(jsonPackage));
-            //         client.expire(jsonData.data.friendID + "_friendMessage", 1000);
-            //         for (var x = 0; x < clients.length; x++) {
-
-            //             if (getMember_result.some(item => item.UserID === clients[x].id)) {
-
-            //                 clients[x].send(JSON.stringify(jsonData))
-
-            //             }
-            //         }
-
-            //     })
-            //     .catch((err) => {
-            //         console.log(err)
-            //     })
-            //     break
 
             default:
                 break

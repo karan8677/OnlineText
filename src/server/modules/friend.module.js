@@ -3,14 +3,14 @@ const getUserFriend = (userID) => {
 
     return new Promise((resolve, reject) => {
 
-        var sqlCommand = "SELECT Account.UserAccount AS friendName, Account.UserID AS friendID " +
+        var sqlCommand = "SELECT Account.UserAccount AS friendName, FriendList.FriendID AS friendID " +
             "FROM Account " +
             "INNER JOIN FriendList " +
             "ON FriendList.UserID2 = Account.UserID " +
             "WHERE FriendList.UserID1 = " +
             userID +
 
-            " UNION SELECT Account.UserAccount AS friendName, Account.UserID AS friendID " +
+            " UNION SELECT Account.UserAccount AS friendName, FriendList.FriendID AS friendID " +
             "FROM Account " +
             "INNER JOIN FriendList " +
             "ON FriendList.UserID1 = Account.UserID " +
@@ -48,6 +48,8 @@ const getFriend = (UserID1, UserID2) => {
             })
     })
 }
+
+
 
 const addFriend = (UserID1, UserID2) => {
     return new Promise((resolve, reject) =>{
