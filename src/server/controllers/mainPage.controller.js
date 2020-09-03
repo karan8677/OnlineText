@@ -8,7 +8,7 @@ const mainPageGet = (req, res) => {
         res.render('mainPage')
 
     }).catch((err) => {
-        res.redirect('https://127.0.0.1:3000/OnlineText/login');
+        res.redirect('./login');
         // res.send(err)
     })
 }

@@ -1,5 +1,5 @@
 import express from 'express'
-import mainPageCtrl from '../controllers/mainPage.Controller'
+import mainPageCtrl from '../controllers/mainPage.controller'
 
 const router = express.Router()
 

@@ -86,7 +86,7 @@ class App extends React.Component {
             style: {
                 color: "#7D7DFF"
             },
-            href: "https://127.0.0.1:3000/OnlineText/login"
+            href: "./login"
         }, "Login"))));
     }
 
@@ -141,7 +141,7 @@ class App extends React.Component {
 
             if (onLoadMessage.messageName === "register") {
                 if (onLoadMessage.data === "success") {
-                    location.href = 'https://127.0.0.1:3000/OnlineText/login';
+                    location.href = './login';
                 } else if (onLoadMessage.data === "account exist") {
                     this.setState({
                         ["error"]: "accountError"

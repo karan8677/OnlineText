@@ -14,10 +14,9 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(cors())
 app.use(morgan('dev'))
-
-app.set('views', './views')
+// app.set('views', path.join(__dirname, 'views'));
+app.set('views', 'C:/OnlineText/views')
 app.set("view engine", "jade")
-
 /* GET home page. */
 app.upload = function (req, res) {
     console.log(req.body)

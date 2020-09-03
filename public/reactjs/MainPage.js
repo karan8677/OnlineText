@@ -300,6 +300,9 @@ class RoomList extends React.Component {
 class InviteList extends React.Component {
     constructor(props) {
         super(props);
+
+        _defineProperty(this, "inviteCount", 0);
+
         this.state = {
             groupInviteList: this.props.groupData,
             friendInviteList: this.props.friendData
@@ -395,7 +398,7 @@ class InviteList extends React.Component {
         for (var num = 0; num < this.state.groupInviteList.length; num++) {
             invite.push( /*#__PURE__*/React.createElement("div", {
                 className: "inviteContainer flexColumn",
-                key: this.state.groupInviteList[num].groupID,
+                key: this.inviteCount++,
                 id: this.state.groupInviteList[num].groupID + "group"
             }, /*#__PURE__*/React.createElement("div", {
                 className: "text"
@@ -427,7 +430,7 @@ class InviteList extends React.Component {
         for (var num = 0; num < this.state.friendInviteList.length; num++) {
             invite.push( /*#__PURE__*/React.createElement("div", {
                 className: "inviteContainer flexColumn",
-                key: this.state.friendInviteList[num].userID,
+                key: this.inviteCount++,
                 id: this.state.friendInviteList[num].userID + "friend"
             }, /*#__PURE__*/React.createElement("div", {
                 className: "text"
@@ -742,6 +745,8 @@ class HomePage extends React.Component {
     }
 
     render() {
+        groupChatingID = 0;
+        friendChatingID = 0;
         return /*#__PURE__*/React.createElement("div", {
             className: "flexRow",
             style: {

@@ -34,7 +34,7 @@ class App extends React.Component {
                     </div>
                 </div>
                 <div>
-                    <h6><small className="font">Don't have account? <a style={{ color:"#7D7DFF" }} href="https://127.0.0.1:3000/OnlineText/register">Register</a></small></h6>
+                    <h6><small className="font">Don't have account? <a style={{ color:"#7D7DFF" }} href="./register">Register</a></small></h6>
                 </div>
             </div>
         );
@@ -61,7 +61,7 @@ class App extends React.Component {
 
                 if (onLoadMessage.data === "success") {
 
-                    location.href ='https://127.0.0.1:3000/OnlineText/mainPage';
+                    location.href ='./mainPage';
 
                 } else if (onLoadMessage.data === "account not found") {
                     

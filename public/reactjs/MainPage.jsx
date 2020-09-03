@@ -218,11 +218,13 @@ class RoomList extends React.Component {
     }
 }
 class InviteList extends React.Component {
+    inviteCount = 0
     constructor(props) {
         super(props)
         this.state = {
             groupInviteList: this.props.groupData,
             friendInviteList: this.props.friendData
+            
         }
     }
     accept(event){
@@ -297,7 +299,7 @@ class InviteList extends React.Component {
     render() {
         const invite = []
         for (var num = 0; num < this.state.groupInviteList.length; num++) {
-            invite.push(<div className="inviteContainer flexColumn" key={this.state.groupInviteList[num].groupID} id={this.state.groupInviteList[num].groupID + "group"}>
+            invite.push(<div className="inviteContainer flexColumn" key={this.inviteCount++} id={this.state.groupInviteList[num].groupID + "group"}>
                 <div className="text">{this.state.groupInviteList[num].groupName}</div>
                 <div className="checkBoxContainer flexRow">
                     <div className="checkBox">
@@ -314,7 +316,7 @@ class InviteList extends React.Component {
             </div>)
         }
         for (var num = 0; num < this.state.friendInviteList.length; num++) {
-            invite.push(<div className="inviteContainer flexColumn" key={this.state.friendInviteList[num].userID} id={this.state.friendInviteList[num].userID + "friend"}>
+            invite.push(<div className="inviteContainer flexColumn" key={this.inviteCount++} id={this.state.friendInviteList[num].userID + "friend"}>
                 <div className="text">{this.state.friendInviteList[num].userName}</div>
                 <div className="checkBoxContainer flexRow">
                     <div className="checkBox">
@@ -526,6 +528,8 @@ class HomePage extends React.Component {
         ReactDOM.render(<UserSetting />, document.getElementById("friendMessageAndUserSetting"))
     }
     render() {
+        groupChatingID =0 
+        friendChatingID = 0
             return (
             <div className="flexRow" style={{ height: "100%" }}>
                 <div className="groupListAndHomePageContainer flexColumn" style={{borderRight:"1px solid black"}}>

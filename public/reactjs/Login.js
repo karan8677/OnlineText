@@ -71,7 +71,7 @@ class App extends React.Component {
             style: {
                 color: "#7D7DFF"
             },
-            href: "https://127.0.0.1:3000/OnlineText/register"
+            href: "./register"
         }, "Register")))));
     }
 
@@ -110,7 +110,7 @@ class App extends React.Component {
 
             if (onLoadMessage.messageName === "login") {
                 if (onLoadMessage.data === "success") {
-                    location.href = 'https://127.0.0.1:3000/OnlineText/mainPage';
+                    location.href = './mainPage';
                 } else if (onLoadMessage.data === "account not found") {
                     this.setState({
                         ["error"]: "accountError"

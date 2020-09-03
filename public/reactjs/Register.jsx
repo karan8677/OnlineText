@@ -39,7 +39,7 @@ class App extends React.Component {
                         <button className="btn btn-primary text-white" style={{ width: "100%" }} onClick={this.registerSubmit}>Register</button>
                     </div>
                 </div>
-                <h6><small className="font">Have account?<a style={{ color: "#7D7DFF" }} href="https://127.0.0.1:3000/OnlineText/login">Login</a></small></h6>
+                <h6><small className="font">Have account?<a style={{ color: "#7D7DFF" }} href="./login">Login</a></small></h6>
             </div>
         );
     }
@@ -77,7 +77,7 @@ class App extends React.Component {
 
                 if (onLoadMessage.data === "success") {
 
-                    location.href = 'https://127.0.0.1:3000/OnlineText/login';
+                    location.href = './login';
 
                 } 
                 else if (onLoadMessage.data === "account exist"){
